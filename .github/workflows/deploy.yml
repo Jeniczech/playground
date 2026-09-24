@@ -52,3 +52,45 @@ jobs:
           tags: |
             ghcr.io/jeniczech/playground:migration
             ghcr.io/jeniczech/playground:migration-${{ github.sha }}
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/basecamp
+          chmod 600 ~/.ssh/basecamp
+
+          ssh-keyscan -H "${{ secrets.SSH_HOST }}" >> ~/.ssh/known_hosts
+
+      - name: Deploy to Basecamp
+        run: |
+          ssh \
+            -i ~/.ssh/basecamp \
+            "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" \
+            'bash -s' << 'EOF'
+              set -e
+
+              SHA="${{ github.sha }}"
+
+              echo "Deploying $SHA"
+
+              docker pull "ghcr.io/jeniczech/playground:migration-$SHA"
+              docker pull "ghcr.io/jeniczech/playground:$SHA"
+
+              docker run --rm \
+                --network basecamp-network \
+                --env-file /opt/apps/playground/.env \
+                "ghcr.io/jeniczech/playground:migration-$SHA"
+
+              cd /opt/apps/playground
+
+              IMAGE_TAG="$SHA" docker compose up -d
+
+              echo "Deployment complete"
+          EOF
