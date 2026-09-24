@@ -20,8 +20,6 @@ export default async function HomePage() {
 
   return (
     <main>
-      <h1>Posts</h1>
-
       {posts.docs.map((post) => (
         <article key={post.id}>
           <h2>{post.title}</h2>
