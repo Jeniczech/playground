@@ -1,0 +1,32 @@
+services:
+  postgres:
+    image: postgres:18
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_USER: playground
+      POSTGRES_PASSWORD: playground
+      POSTGRES_DB: playground
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - postgres_data:/var/lib/postgresql
+
+  app:
+    image: playground:local
+    restart: unless-stopped
+
+    environment:
+      DATABASE_URL: postgres://playground:playground@postgres:5432/playground
+      PAYLOAD_SECRET: ${PAYLOAD_SECRET}
+
+    ports:
+      - "3000:3000"
+
+    depends_on:
+      - postgres
+
+volumes:
+  postgres_data:

@@ -1,0 +1,25 @@
+# Dependencies
+node_modules
+
+# Next.js build output
+.next
+
+# Environment / secrets
+.env
+.env.*
+
+# Git
+.git
+.gitignore
+
+# Local IDE / OS
+.idea
+.DS_Store
+
+# Logs
+*.log
+
+# Tests / coverage
+coverage
+playwright-report
+test-results
