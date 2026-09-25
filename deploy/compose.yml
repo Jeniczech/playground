@@ -1,0 +1,17 @@
+services:
+  app:
+    image: ghcr.io/jeniczech/playground:${IMAGE_TAG:-latest}
+    restart: unless-stopped
+
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      PAYLOAD_SECRET: ${PAYLOAD_SECRET}
+
+    networks:
+      basecamp-network:
+        aliases:
+          - playground
+
+networks:
+  basecamp-network:
+    external: true
