@@ -62,11 +62,18 @@ jobs:
         run: |
           mkdir -p ~/.ssh
           chmod 700 ~/.ssh
-
+          
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/basecamp
           chmod 600 ~/.ssh/basecamp
-
+          
           ssh-keyscan -H "${{ secrets.SSH_HOST }}" >> ~/.ssh/known_hosts
+
+      - name: Upload production Compose config
+        run: |
+          scp \
+            -i ~/.ssh/basecamp \
+            deploy/compose.yml \
+            "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/opt/apps/playground/compose.yml.new"
 
       - name: Deploy to Basecamp
         run: |
@@ -75,22 +82,36 @@ jobs:
             "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" \
             'bash -s' << 'EOF'
               set -e
-
+          
               SHA="${{ github.sha }}"
-
+              APP_DIR="/opt/apps/playground"
+          
               echo "Deploying $SHA"
-
+          
+              cd "$APP_DIR"
+          
+              # Validate the new production configuration before doing anything.
+              IMAGE_TAG="$SHA" \
+                docker compose \
+                --env-file .env \
+                -f compose.yml.new \
+                config --quiet
+          
+              # Pull the exact images produced from this Git commit.
               docker pull "ghcr.io/jeniczech/playground:migration-$SHA"
               docker pull "ghcr.io/jeniczech/playground:$SHA"
-
+          
+              # Migrate the database before switching the application.
               docker run --rm \
                 --network basecamp-network \
-                --env-file /opt/apps/playground/.env \
+                --env-file "$APP_DIR/.env" \
                 "ghcr.io/jeniczech/playground:migration-$SHA"
-
-              cd /opt/apps/playground
-
+          
+              # Migration succeeded. The new Compose config now becomes active.
+              mv compose.yml.new compose.yml
+          
+              # Start the exact application version belonging to this commit.
               IMAGE_TAG="$SHA" docker compose up -d
-
+          
               echo "Deployment complete"
           EOF
