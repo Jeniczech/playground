@@ -36,15 +36,26 @@ export default buildConfig({
     {
       path: '/health',
       method: 'get',
-      handler: async () => {
-        return Response.json(
-          {
-            status: 'error',
-          },
-          {
-            status: 503,
-          },
-        )
+      handler: async (req) => {
+        try {
+          await req.payload.find({
+            collection: 'users',
+            limit: 1,
+          })
+
+          return Response.json({
+            status: 'ok',
+          })
+        } catch {
+          return Response.json(
+            {
+              status: 'error',
+            },
+            {
+              status: 503,
+            },
+          )
+        }
       },
     },
   ],
