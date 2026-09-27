@@ -14,7 +14,56 @@ env:
   IMAGE_NAME: jeniczech/playground
 
 jobs:
+  verify:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_USER: playground
+          POSTGRES_PASSWORD: playground
+          POSTGRES_DB: playground
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U playground -d playground"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DATABASE_URL: postgres://playground:playground@localhost:5432/playground
+      PAYLOAD_SECRET: ci-test-secret
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.17.0
+
+      - name: Enable Corepack
+        run: |
+          npm install -g corepack@0.36.0
+          corepack enable
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run migrations
+        run: pnpm payload migrate
+
+      - name: Run lint
+        run: pnpm lint
+
+      - name: Run integration tests
+        run: pnpm test:int
+
   build:
+    needs: verify
     runs-on: ubuntu-latest
 
     steps:
@@ -65,16 +114,17 @@ jobs:
         run: |
           mkdir -p ~/.ssh
           chmod 700 ~/.ssh
-          
+
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/basecamp
           chmod 600 ~/.ssh/basecamp
-          
-          echo "${{ secrets.SSH_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+
+          printf '%s\n' "${{ secrets.SSH_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
           chmod 600 ~/.ssh/known_hosts
 
       - name: Upload production Compose config
         run: |
           scp \
+            -o StrictHostKeyChecking=yes \
             -i ~/.ssh/basecamp \
             deploy/compose.yml \
             "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/opt/apps/playground/compose.yml.new"
@@ -82,40 +132,36 @@ jobs:
       - name: Deploy to Basecamp
         run: |
           ssh \
+            -o StrictHostKeyChecking=yes \
             -i ~/.ssh/basecamp \
             "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" \
             'bash -s' << 'EOF'
               set -e
-          
+
               SHA="${{ github.sha }}"
               APP_DIR="/opt/apps/playground"
-          
+
               echo "Deploying $SHA"
-          
+
               cd "$APP_DIR"
-          
-              # Validate the new production configuration before doing anything.
+
               IMAGE_TAG="$SHA" \
                 docker compose \
                 --env-file .env \
                 -f compose.yml.new \
                 config --quiet
-          
-              # Pull the exact images produced from this Git commit.
+
               docker pull "ghcr.io/jeniczech/playground:migration-$SHA"
               docker pull "ghcr.io/jeniczech/playground:$SHA"
-          
-              # Migrate the database before switching the application.
+
               docker run --rm \
                 --network basecamp-network \
                 --env-file "$APP_DIR/.env" \
                 "ghcr.io/jeniczech/playground:migration-$SHA"
-          
-              # Migration succeeded. The new Compose config now becomes active.
+
               mv compose.yml.new compose.yml
-          
-              # Start the exact application version belonging to this commit.
+
               IMAGE_TAG="$SHA" docker compose up -d
-          
+
               echo "Deployment complete"
           EOF
