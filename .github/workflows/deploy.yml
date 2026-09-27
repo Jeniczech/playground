@@ -177,8 +177,13 @@ jobs:
                 "ghcr.io/jeniczech/playground:migration-$SHA"
 
               #
-              # Activate the new Compose configuration.
+              # Preserve the current Compose configuration for rollback,
+              # then activate the new one.
               #
+              if [ -f compose.yml ]; then
+                cp compose.yml compose.yml.previous
+              fi
+            
               mv compose.yml.new compose.yml
 
               #
@@ -192,14 +197,14 @@ jobs:
 
               HEALTHY=false
 
-              for attempt in $(seq 1 12); do
+              for attempt in $(seq 1 24); do
                 STATUS="$(
                   docker inspect \
                     --format '{{if .State.Health}}{{.State.Health.Status}}{{else}}none{{end}}' \
                     "$APP_CONTAINER"
                 )"
 
-                echo "Health check $attempt/12: $STATUS"
+                echo "Health check $attempt/24: $STATUS"
 
                 if [ "$STATUS" = "healthy" ]; then
                   HEALTHY=true
@@ -214,6 +219,7 @@ jobs:
               done
 
               if [ "$HEALTHY" = "true" ]; then
+                rm -f compose.yml.previous
                 echo "Deployment complete — application is healthy"
                 exit 0
               fi
@@ -221,10 +227,16 @@ jobs:
               echo "New application failed health check"
 
               #
-              # Roll back to the image that was running before this deploy.
+              # Roll back to the Compose configuration and image
+              # that were running before this deploy.
               #
               if [ -z "$PREVIOUS_IMAGE" ]; then
                 echo "No previous image available for rollback"
+                exit 1
+              fi
+          
+              if [ ! -f compose.yml.previous ]; then
+                echo "No previous Compose configuration available for rollback"
                 exit 1
               fi
 
@@ -235,8 +247,10 @@ jobs:
                 exit 1
               fi
 
-              echo "Rolling back to $PREVIOUS_IMAGE"
+              echo "Restoring previous Compose configuration"
+              mv compose.yml.previous compose.yml
 
+              echo "Rolling back to $PREVIOUS_IMAGE"
               IMAGE_TAG="$PREVIOUS_TAG" docker compose up -d
 
               ROLLBACK_CONTAINER="$(
@@ -247,14 +261,14 @@ jobs:
 
               ROLLBACK_HEALTHY=false
 
-              for attempt in $(seq 1 12); do
+              for attempt in $(seq 1 24); do
                 STATUS="$(
                   docker inspect \
                     --format '{{if .State.Health}}{{.State.Health.Status}}{{else}}none{{end}}' \
                     "$ROLLBACK_CONTAINER"
                 )"
 
-                echo "Rollback health check $attempt/12: $STATUS"
+                echo "Rollback health check $attempt/24: $STATUS"
 
                 if [ "$STATUS" = "healthy" ]; then
                   ROLLBACK_HEALTHY=true
