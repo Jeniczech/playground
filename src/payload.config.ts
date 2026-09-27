@@ -32,4 +32,31 @@ export default buildConfig({
   }),
   sharp,
   plugins: [],
+  endpoints: [
+    {
+      path: '/health',
+      method: 'get',
+      handler: async (req) => {
+        try {
+          await req.payload.find({
+            collection: 'users',
+            limit: 1,
+          })
+
+          return Response.json({
+            status: 'ok',
+          })
+        } catch {
+          return Response.json(
+            {
+              status: 'error',
+            },
+            {
+              status: 503,
+            },
+          )
+        }
+      },
+    },
+  ],
 })
