@@ -211,6 +211,10 @@ jobs:
               done <<< "$RELEASE_MIGRATIONS"
 
               echo "Deploy has pending migrations: $DEPLOY_HAS_PENDING_MIGRATIONS"
+          
+              # TEMPORARY: test rollback protection
+              DEPLOY_HAS_PENDING_MIGRATIONS=true
+              echo "TEST: forcing pending migrations flag to true"
 
               #
               # Run database migrations.
