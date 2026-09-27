@@ -132,7 +132,7 @@ jobs:
             -i ~/.ssh/basecamp \
             "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" \
             'bash -s' << 'EOF'
-              set -e
+              set -Eeuo pipefail
 
               SHA="${{ github.sha }}"
               APP_DIR="/opt/apps/playground"
@@ -167,6 +167,52 @@ jobs:
               #
               docker pull "ghcr.io/jeniczech/playground:migration-$SHA"
               docker pull "ghcr.io/jeniczech/playground:$SHA"
+          
+              #
+              # Get the migrations contained in this release.
+              #
+              RELEASE_MIGRATIONS="$(
+                docker run --rm \
+                --entrypoint sh \
+                "ghcr.io/jeniczech/playground:migration-$SHA" \
+                -c "find /app/src/migrations -maxdepth 1 -type f -name '*.ts' ! -name 'index.ts' -printf '%f\n' | sed 's/\.ts$//' | sort"
+              )"
+  
+              echo "Migrations in release:"
+              printf '%s\n' "$RELEASE_MIGRATIONS"
+          
+              #
+              # Get migrations already applied to the production database.
+              #
+              APPLIED_MIGRATIONS="$(
+                docker exec basecamp-postgres-1 \
+                  psql \
+                    -U playground \
+                    -d playground \
+                    -Atc "SELECT name FROM payload_migrations WHERE name <> 'dev' ORDER BY name;"
+              )"
+  
+              echo "Applied migrations:"
+              printf '%s\n' "$APPLIED_MIGRATIONS"
+          
+              #
+              # Detect whether this release contains migrations
+              # that have not yet been applied to production.
+              #
+              DEPLOY_HAS_PENDING_MIGRATIONS=false
+  
+              while IFS= read -r migration; do
+                [ -z "$migration" ] && continue
+
+                if ! printf '%s\n' "$APPLIED_MIGRATIONS" | grep -Fxq "$migration"; then
+                  echo "Pending migration: $migration"
+                  DEPLOY_HAS_PENDING_MIGRATIONS=true
+                fi
+              done <<EOF_MIGRATIONS
+              $RELEASE_MIGRATIONS
+              EOF_MIGRATIONS
+
+              echo "Deploy has pending migrations: $DEPLOY_HAS_PENDING_MIGRATIONS"
 
               #
               # Run database migrations.
@@ -225,6 +271,19 @@ jobs:
               fi
 
               echo "New application failed health check"
+          
+              #
+              # Automatic rollback is unsafe if this deployment applied
+              # database migrations. The previous application may not be
+              # compatible with the new schema.
+              #
+              if [ "$DEPLOY_HAS_PENDING_MIGRATIONS" = "true" ]; then
+                echo "AUTOMATIC ROLLBACK REFUSED"
+                echo "This deployment had pending database migrations and the migration step completed."
+                echo "The previous application may be incompatible with the migrated schema."
+                echo "Manual intervention is required."
+                exit 1
+              fi
 
               #
               # Roll back to the Compose configuration and image
