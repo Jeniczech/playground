@@ -155,7 +155,7 @@ jobs:
               # Remember the image that is currently running.
               #
               PREVIOUS_IMAGE="$(
-                docker compose ps -q app \
+                IMAGE_TAG="$SHA" docker compose ps -q app \
                   | xargs -r docker inspect \
                     --format '{{.Config.Image}}'
               )"
@@ -186,7 +186,7 @@ jobs:
               #
               IMAGE_TAG="$SHA" docker compose up -d
 
-              APP_CONTAINER="$(docker compose ps -q app)"
+              APP_CONTAINER="$(IMAGE_TAG="$SHA" docker compose ps -q app)"
 
               echo "Waiting for application health..."
 
@@ -239,7 +239,9 @@ jobs:
 
               IMAGE_TAG="$PREVIOUS_TAG" docker compose up -d
 
-              ROLLBACK_CONTAINER="$(docker compose ps -q app)"
+              ROLLBACK_CONTAINER="$(
+                IMAGE_TAG="$PREVIOUS_TAG" docker compose ps -q app
+              )"
 
               echo "Waiting for rollback health..."
 
