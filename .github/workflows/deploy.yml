@@ -189,11 +189,11 @@ jobs:
               # Get migrations already applied to the production database.
               #
               APPLIED_MIGRATIONS="$(
-                docker exec basecamp-postgres-1 \
-                  psql \
-                    -U playground \
-                    -d playground \
-                    -Atc "SELECT name FROM payload_migrations WHERE name <> 'dev' ORDER BY name;"
+                docker run --rm \
+                  --network basecamp-network \
+                  --env-file "$APP_DIR/.env" \
+                  postgres:18 \
+                  sh -c 'psql "$DATABASE_URL" -Atc "SELECT name FROM payload_migrations WHERE name <> '\''dev'\'' ORDER BY name;"'
               )"
   
               echo "Applied migrations:"
