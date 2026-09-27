@@ -175,7 +175,7 @@ jobs:
                 docker run --rm \
                 --entrypoint sh \
                 "ghcr.io/jeniczech/playground:migration-$SHA" \
-                -c "find /app/src/migrations -maxdepth 1 -type f -name '*.ts' ! -name 'index.ts' -printf '%f\n' | sed 's/\.ts$//' | sort"
+                -c "find /app/src/migrations -maxdepth 1 -type f -name '*.ts' ! -name 'index.ts' -print | sed 's#.*/##; s/\.ts$//' | sort"
               )"
   
               echo "Migrations in release:"
@@ -208,9 +208,7 @@ jobs:
                   echo "Pending migration: $migration"
                   DEPLOY_HAS_PENDING_MIGRATIONS=true
                 fi
-              done <<EOF_MIGRATIONS
-              $RELEASE_MIGRATIONS
-              EOF_MIGRATIONS
+              done <<< "$RELEASE_MIGRATIONS"
 
               echo "Deploy has pending migrations: $DEPLOY_HAS_PENDING_MIGRATIONS"
 
