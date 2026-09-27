@@ -1,20 +1,24 @@
 # Basecamp 🏔️
 
-Basecamp is a small self-hosted environment for running personal web applications.
+Basecamp is a small self-hosted environment for running personal web
+applications.
 
-The current setup hosts a Payload CMS / Next.js application called `playground` at:
+The current setup hosts a Payload CMS / Next.js application called
+`playground` at:
 
 `https://praguescavengerhunt.cz`
 
-The goal was not only to get the application online, but to build a reasonably production-like setup that can later host multiple independent applications.
+The goal was not only to get the application online, but to build a
+reasonably production-like setup that can later host multiple
+independent applications.
 
----
+------------------------------------------------------------------------
 
 # 1. Architecture
 
 Current architecture:
 
-```text
+``` text
 Internet
    │
    │ HTTPS :443
@@ -40,13 +44,14 @@ Internet
 
 Publicly exposed ports:
 
-- `22` – SSH
-- `80` – HTTP, primarily for redirect / certificate handling
-- `443` – HTTPS
+-   `22` -- SSH
+-   `80` -- HTTP, primarily for redirect / certificate handling
+-   `443` -- HTTPS
 
-The application port `3000` and PostgreSQL port `5432` are not exposed publicly.
+The application port `3000` and PostgreSQL port `5432` are not exposed
+publicly.
 
----
+------------------------------------------------------------------------
 
 # 2. VPS
 
@@ -54,7 +59,7 @@ Provider: FORPSI
 
 Server:
 
-```text
+``` text
 Ubuntu 24.04
 2 vCPU
 4 GB RAM
@@ -65,19 +70,19 @@ The server is called **Basecamp**.
 
 Applications live under:
 
-```text
+``` text
 /opt/apps/
 ```
 
 Shared infrastructure lives under:
 
-```text
+``` text
 /opt/basecamp/
 ```
 
 For example:
 
-```text
+``` text
 /opt/
 ├── basecamp/
 │   ├── compose.yml
@@ -90,15 +95,39 @@ For example:
         └── .env
 ```
 
-This separation allows Basecamp to host multiple applications while keeping shared infrastructure independent.
+This separation allows Basecamp to host multiple applications while
+keeping shared infrastructure independent.
 
----
+The shared infrastructure configuration is also version-controlled in the
+private Git repository:
+
+```text
+Jeniczech/basecamp-infra
+```
+
+It contains:
+```text
+compose.yml
+Caddyfile
+.env.example
+README.md
+```
+
+The repository is the source of truth for the shared PostgreSQL and Caddy
+configuration. `/opt/basecamp/` contains the deployed copy plus the real
+production .env, which is intentionally not stored in Git.
+
+Shared infrastructure is currently deployed manually rather than through
+CI/CD. This is intentional because changes to PostgreSQL or Caddy have a
+larger blast radius than changes to a single application.
+
+------------------------------------------------------------------------
 
 # 3. SSH and basic server security
 
 A non-root user is used for administration:
 
-```text
+``` text
 jenda
 ```
 
@@ -106,7 +135,7 @@ Root login and password authentication over SSH are disabled.
 
 SSH configuration:
 
-```text
+``` text
 PermitRootLogin no
 PasswordAuthentication no
 PubkeyAuthentication yes
@@ -116,7 +145,7 @@ Authentication therefore requires an SSH key.
 
 UFW is enabled and only allows:
 
-```text
+``` text
 22
 80
 443
@@ -126,14 +155,16 @@ Fail2ban is enabled for SSH.
 
 There are currently two SSH identities:
 
-1. personal SSH key used from the development machine
-2. dedicated SSH key used by GitHub Actions
+1.  personal SSH key used from the development machine
+2.  dedicated SSH key used by GitHub Actions
 
 The GitHub Actions key currently authenticates as `jenda`.
 
-Important: `jenda` belongs to the Docker group. Docker group membership effectively provides root-level control over the server. A future improvement is to create a more restricted deployment user.
+Important: `jenda` belongs to the Docker group. Docker group membership
+effectively provides root-level control over the server. A future
+improvement is to create a more restricted deployment user.
 
----
+------------------------------------------------------------------------
 
 # 4. Docker
 
@@ -141,28 +172,29 @@ Docker is used both locally and in production.
 
 Why Docker:
 
-- reproducible environment
-- application dependencies are isolated from the VPS
-- easier deployments
-- easy replacement of application containers
-- straightforward rollback to an older application image
-- multiple applications can coexist on the same VPS
+-   reproducible environment
+-   application dependencies are isolated from the VPS
+-   easier deployments
+-   easy replacement of application containers
+-   straightforward rollback to an older application image
+-   multiple applications can coexist on the same VPS
 
 Applications communicate through a shared external Docker network:
 
-```text
+``` text
 basecamp-network
 ```
 
 It was created with:
 
-```bash
+``` bash
 docker network create basecamp-network
 ```
 
-The network is external because it is shared by multiple independent Docker Compose projects.
+The network is external because it is shared by multiple independent
+Docker Compose projects.
 
----
+------------------------------------------------------------------------
 
 # 5. PostgreSQL
 
@@ -170,13 +202,13 @@ Basecamp runs one shared PostgreSQL server.
 
 Each application gets:
 
-- its own database
-- its own PostgreSQL user
-- its own password
+-   its own database
+-   its own PostgreSQL user
+-   its own password
 
 For `playground`:
 
-```text
+``` text
 database: playground
 user: playground
 ```
@@ -185,7 +217,7 @@ The application never connects as the PostgreSQL superuser.
 
 Conceptually:
 
-```text
+``` text
 PostgreSQL
 ├── playground database
 │   └── playground user
@@ -197,13 +229,16 @@ PostgreSQL
     └── another-app user
 ```
 
-We chose one shared PostgreSQL container instead of one PostgreSQL container per application mainly because Basecamp has only 4 GB RAM.
+We chose one shared PostgreSQL container instead of one PostgreSQL
+container per application mainly because Basecamp has only 4 GB RAM.
 
-This keeps resource usage lower while still providing logical isolation between applications.
+This keeps resource usage lower while still providing logical isolation
+between applications.
 
-PostgreSQL data is stored in a Docker volume, so recreating the PostgreSQL container does not delete the database.
+PostgreSQL data is stored in a Docker volume, so recreating the
+PostgreSQL container does not delete the database.
 
----
+------------------------------------------------------------------------
 
 # 6. Reverse proxy and HTTPS
 
@@ -211,7 +246,7 @@ Caddy is used as the reverse proxy.
 
 Current configuration:
 
-```caddy
+``` caddy
 praguescavengerhunt.cz {
     reverse_proxy playground:3000
 }
@@ -225,7 +260,7 @@ Caddy automatically obtains and renews TLS certificates.
 
 DNS:
 
-```text
+``` text
 praguescavengerhunt.cz → 81.2.239.212
 ```
 
@@ -233,42 +268,43 @@ The application itself does not expose port `3000` to the internet.
 
 Caddy communicates with it over:
 
-```text
+``` text
 basecamp-network
 ```
 
 The `playground` Compose service has the network alias:
 
-```text
+``` text
 playground
 ```
 
 Therefore Caddy can always reach:
 
-```text
+``` text
 http://playground:3000
 ```
 
 regardless of the generated Docker container name.
 
----
+------------------------------------------------------------------------
 
 # 7. Playground application
 
 The application consists of:
 
-```text
+``` text
 Next.js
 Payload CMS
 PostgreSQL
 TypeScript
 ```
 
-Payload is integrated directly into the Next.js application rather than running as a separate backend service.
+Payload is integrated directly into the Next.js application rather than
+running as a separate backend service.
 
 This means the architecture is essentially:
 
-```text
+``` text
 Next.js
 ├── frontend
 ├── Payload Admin
@@ -279,11 +315,12 @@ Next.js
     PostgreSQL
 ```
 
-Server Components can use the Payload Local API directly without making an HTTP request to the application's own REST API.
+Server Components can use the Payload Local API directly without making
+an HTTP request to the application's own REST API.
 
 Example:
 
-```ts
+``` ts
 const payload = await getPayload({ config })
 
 const posts = await payload.find({
@@ -291,13 +328,13 @@ const posts = await payload.find({
 })
 ```
 
----
+------------------------------------------------------------------------
 
 # 8. Payload collections
 
 The playground currently contains:
 
-```text
+``` text
 Users
 Media
 Posts
@@ -305,7 +342,7 @@ Posts
 
 `Posts` contains fields such as:
 
-```text
+``` text
 title
 slug
 content
@@ -315,15 +352,21 @@ author
 
 Anonymous users can only read published posts.
 
+`Users` has two roles: `admin` and `editor`. New users default to
+`editor`. Admins can manage users and roles; editors can read/update
+only themselves and cannot promote themselves, create users, or delete
+users. These authorization rules are covered by integration tests.
+
 The homepage additionally explicitly queries:
 
-```text
+``` text
 published = true
 ```
 
-This is intentional because Payload Local API can bypass access control depending on how it is invoked.
+This is intentional because Payload Local API can bypass access control
+depending on how it is invoked.
 
----
+------------------------------------------------------------------------
 
 # 9. Database migrations
 
@@ -331,7 +374,7 @@ Payload database schema changes are managed through migrations.
 
 Migrations live under:
 
-```text
+``` text
 src/migrations/
 ```
 
@@ -341,116 +384,167 @@ A migration image is built separately from the production runtime image.
 
 Dockerfile targets:
 
-```text
+``` text
 runner
 migration
 ```
 
 This allows the same source code to produce:
 
-```text
+``` text
 application image
 migration image
 ```
 
 Both therefore correspond to exactly the same Git commit.
 
-Production deployment runs the migration before starting the new application version.
+Production deployment runs the migration before starting the new
+application version.
 
-If migration execution fails, deployment stops and the new application image is not started.
+If migration execution fails, deployment stops and the new application
+image is not started.
 
 Important limitation:
 
 This does NOT currently provide a complete database rollback strategy.
 
-A failed or successful schema migration can potentially make an older application version incompatible with the database.
+A failed or successful schema migration can potentially make an older
+application version incompatible with the database.
 
-Future production migrations should therefore preferably follow backward-compatible patterns such as expand/contract migrations.
+Future production migrations should therefore preferably follow
+backward-compatible patterns such as expand/contract migrations.
 
----
+------------------------------------------------------------------------
 
 # 10. Docker images
 
 Images are stored in GitHub Container Registry:
 
-```text
+``` text
 ghcr.io/jeniczech/playground
 ```
 
-Each build produces application images:
+Each build produces only SHA-tagged application images:
 
-```text
-playground:latest
+``` text
 playground:<git-sha>
 ```
 
-and migration images:
+and SHA-tagged migration images:
 
-```text
-playground:migration
+``` text
 playground:migration-<git-sha>
 ```
 
-The immutable Git SHA tag is used for deployment.
+Mutable deployment tags such as `latest` are intentionally not published
+or used by the deployment workflow. Production deployment and automatic
+rollback accept the full 40-character Git SHA tag, so the release being
+started is explicit.
 
-This is preferable to deploying only `latest`, because it tells us exactly which source commit is running and allows an older application image to be selected again.
-
----
+------------------------------------------------------------------------
 
 # 11. CI/CD
 
-Deployment is automated using GitHub Actions.
+Deployment is automated using GitHub Actions. A push to `main` starts:
 
-A push to:
-
-```text
-main
+``` text
+verify
+  ├── PostgreSQL 18 service
+  ├── run migrations
+  ├── lint
+  └── integration tests
+       ↓
+build
+  ├── build runner image
+  ├── build migration image
+  └── push SHA-tagged images to GHCR
+       ↓
+deploy
+  ├── upload and validate production Compose config
+  ├── remember currently running application image
+  ├── pull migration-<SHA> and app:<SHA>
+  ├── detect whether the release has pending DB migrations
+  ├── run Payload migrations
+  ├── preserve the previous Compose config
+  ├── activate the new Compose config
+  ├── start app:<SHA>
+  └── wait for Docker health
+          ├── healthy → success
+          └── unhealthy/timeout
+                  │
+                  ├── migrations were applied
+                  │       → refuse automatic rollback
+                  │       → manual intervention
+                  │
+                  └── no migration was pending
+                          → restore previous Compose config
+                          → restore previous SHA image
+                          → wait for rollback health
 ```
 
-starts the pipeline.
+The production Compose configuration is versioned in the application
+repository under `deploy/compose.yml`. `IMAGE_TAG` is mandatory:
 
-Conceptually:
-
-```text
-git push main
-       │
-       ▼
-GitHub Actions
-       │
-       ├── checkout repository
-       ├── build application image
-       ├── build migration image
-       ├── push images to GHCR
-       │
-       ▼
-SSH → Basecamp
-       │
-       ├── pull migration-<SHA>
-       ├── pull app:<SHA>
-       ├── run Payload migrations
-       │
-       └── start app:<SHA>
+``` yaml
+image: "ghcr.io/jeniczech/playground:${IMAGE_TAG:?IMAGE_TAG must be set}"
 ```
 
-The production Compose configuration supports:
+There is deliberately no `latest` fallback.
 
-```yaml
-image: ghcr.io/jeniczech/playground:${IMAGE_TAG:-latest}
+Before replacing `compose.yml`, the workflow copies the current file to
+`compose.yml.previous`. If an application rollback is safe and required,
+both the previous Compose configuration and the previous SHA-tagged
+image are restored. On a successful deployment the temporary previous
+Compose file is removed.
+
+The application exposes `GET /api/health`. The endpoint performs a small
+Payload query against the `users` collection, so a healthy result
+verifies both the application and database connectivity. The production
+Compose service uses this endpoint as its Docker healthcheck.
+
+Docker health uses a 10-second start period, 10-second interval and six
+retries. The deployment and rollback wait loops allow up to 24 checks at
+five-second intervals, giving the Docker healthcheck enough time to move
+out of `starting`. Both loops exit early when Docker reports `healthy`
+or `unhealthy`.
+
+The normal unhealthy-release rollback path has been deliberately tested
+with a release whose health endpoint returned HTTP `503`; the previous
+Compose configuration and previous application image were restored and
+became healthy. The workflow still exits as failed because the requested
+release was not deployed.
+
+Database migrations are different. Before running `payload migrate`, the
+workflow compares migration files contained in the release image with
+the names recorded in production's `payload_migrations` table. If the
+release had a pending migration and the migration step completed,
+automatic application rollback is refused after a failed health check.
+This avoids unattended startup of an older application against a newly
+migrated schema. That guard has also been deliberately tested.
+
+This is a safety guard, not a complete database rollback strategy.
+Production migrations should still follow backward-compatible
+expand/contract patterns wherever practical. Database down migrations
+are not run automatically during rollback.
+
+The workflow uses strict shell settings (`set -Eeuo pipefail`), a
+dedicated SSH key and a pinned server host key with
+`StrictHostKeyChecking=yes`.
+
+GitHub Actions also uses workflow-level concurrency for production:
+
+``` yaml
+concurrency:
+  group: playground-production
+  cancel-in-progress: false
 ```
 
-GitHub Actions executes:
+Only one production workflow can run at a time. An in-progress
+deployment is not cancelled by a newer push, which prevents concurrent
+workflows from racing over `compose.yml.new`, `compose.yml.previous`,
+the running container, or rollback state.
 
-```bash
-IMAGE_TAG="$SHA" docker compose up -d
-```
-
-Therefore production runs the exact image created from the commit that triggered the deployment.
-
-GitHub Actions uses a dedicated SSH key stored as a GitHub Actions secret.
-
-The private SSH key is never stored in the repository.
-
----
+------------------------------------------------------------------------
 
 # 12. Secrets
 
@@ -458,19 +552,19 @@ Secrets are intentionally kept outside Git.
 
 Local development uses:
 
-```text
+``` text
 .env
 ```
 
 Production uses:
 
-```text
+``` text
 /opt/apps/playground/.env
 ```
 
 It contains values such as:
 
-```text
+``` text
 DATABASE_URL
 PAYLOAD_SECRET
 ```
@@ -481,13 +575,15 @@ GitHub Actions additionally stores SSH-related secrets.
 
 `.env` files are excluded from Docker build context and Git.
 
-Secrets must never be committed into the repository or baked into Docker images.
+Secrets must never be committed into the repository or baked into Docker
+images.
 
----
+------------------------------------------------------------------------
 
 # 13. Creating another application on Basecamp
 
-A new application does NOT require another VPS, Caddy instance, or PostgreSQL server.
+A new application does NOT require another VPS, Caddy instance, or
+PostgreSQL server.
 
 The rough procedure is:
 
@@ -495,13 +591,13 @@ The rough procedure is:
 
 Create a dedicated PostgreSQL role:
 
-```sql
+``` sql
 CREATE USER myapp WITH PASSWORD '<password>';
 ```
 
 Create its database:
 
-```sql
+``` sql
 CREATE DATABASE myapp OWNER myapp;
 ```
 
@@ -509,14 +605,14 @@ Do not use the PostgreSQL superuser from the application.
 
 ## 13.2 Create application directory
 
-```bash
+``` bash
 sudo mkdir -p /opt/apps/myapp
 sudo chown jenda:jenda /opt/apps/myapp
 ```
 
 Create:
 
-```text
+``` text
 /opt/apps/myapp/
 ├── compose.yml
 └── .env
@@ -526,7 +622,7 @@ Create:
 
 The application's Compose configuration should use:
 
-```yaml
+``` yaml
 networks:
   basecamp-network:
     external: true
@@ -534,7 +630,7 @@ networks:
 
 Give the application a unique network alias, for example:
 
-```yaml
+``` yaml
 networks:
   basecamp-network:
     aliases:
@@ -545,17 +641,18 @@ networks:
 
 Production connection:
 
-```text
+``` text
 postgres://myapp:<password>@postgres:5432/myapp
 ```
 
-`postgres` is the Docker network hostname of the shared PostgreSQL service.
+`postgres` is the Docker network hostname of the shared PostgreSQL
+service.
 
 ## 13.5 Add Caddy configuration
 
 For example:
 
-```caddy
+``` caddy
 example.com {
     reverse_proxy myapp:3000
 }
@@ -567,15 +664,17 @@ Reload/restart Caddy after validating the configuration.
 
 Point the domain's A record to:
 
-```text
+``` text
 81.2.239.212
 ```
 
-Do not unnecessarily modify unrelated MX, SPF, DKIM or other mail records.
+Do not unnecessarily modify unrelated MX, SPF, DKIM or other mail
+records.
 
 ## 13.7 Configure GHCR
 
-Build application and migration images and publish them to GitHub Container Registry.
+Build application and migration images and publish them to GitHub
+Container Registry.
 
 Prefer immutable Git SHA tags for production deployments.
 
@@ -583,7 +682,7 @@ Prefer immutable Git SHA tags for production deployments.
 
 Add the required repository secrets and create a workflow that:
 
-```text
+``` text
 build
 → push
 → SSH
@@ -593,28 +692,30 @@ build
 
 ## 13.9 First deployment
 
-Run the initial Payload migration before expecting the application to work against an empty database.
+Run the initial Payload migration before expecting the application to
+work against an empty database.
 
 Verify both:
 
-```text
+``` text
 internal Docker connectivity
 public HTTPS endpoint
 ```
 
----
+------------------------------------------------------------------------
 
 # 14. What is still missing
 
-The current setup works, but it is not the end of the production hardening process.
+The current setup works, but it is not the end of the production
+hardening process.
 
-## Database backups — high priority
+## Database backups --- high priority
 
 Automated PostgreSQL backups are not configured yet.
 
 We need:
 
-```text
+``` text
 scheduled pg_dump
         ↓
 off-server storage
@@ -626,7 +727,7 @@ periodic restore test
 
 A backup that has never been restored is not yet a proven backup.
 
-## Payload Media persistence — high priority before using uploads
+## Payload Media persistence --- high priority before using uploads
 
 Files written only inside the application container are ephemeral.
 
@@ -634,58 +735,63 @@ Recreating the container can remove them.
 
 Before relying on Payload Media uploads, configure either:
 
-```text
+``` text
 persistent Docker volume
 ```
 
 or preferably:
 
-```text
+``` text
 S3-compatible object storage
 ```
 
 for long-term production use.
 
-## Deployment health checks
+## Deployment health checks and rollback --- completed
 
-GitHub Actions currently knows that Docker started the container, but that does not necessarily mean the application is healthy.
+Production has a database-aware `/api/health` endpoint, Docker
+healthcheck, deploy-time health waiting, rollback of both the previous
+Compose configuration and previous SHA-tagged application image, and a
+guard that refuses automatic rollback when the release applied a
+database migration.
 
-Add a post-deployment check such as:
+The healthy deployment path, the automatic rollback path for an application
+that fails its health check, and the migration rollback-refusal path have
+been tested with controlled failure scenarios.
 
-```text
-deploy
-   ↓
-wait for application
-   ↓
-GET health endpoint
-   ↓
-expect HTTP 200
-```
-
-Potentially add a Docker `HEALTHCHECK` as well.
+These tests verify the intended behavior for those specific failure modes;
+they do not guarantee automatic recovery from every possible deployment,
+Docker, infrastructure, or migration failure.
 
 ## Database migration strategy
 
-Investigate Payload / Drizzle transaction behavior for migrations.
+The workflow now detects pending Payload migrations before applying them
+and refuses unattended application rollback after a migration was
+applied.
 
-Define a strategy for:
+This reduces the risk of starting an older application against a newer
+schema, but it is not a complete database migration strategy.
 
-- failed migrations
-- backward-compatible migrations
-- app rollback after schema changes
-- destructive migrations
+Still define and enforce conventions for:
 
-Prefer expand/contract migrations for significant production schema changes.
+-   failed/partially applied migrations
+-   backward-compatible expand/contract migrations
+-   destructive migrations
+-   manual recovery after a migrated release fails
+
+Do not automatically run database down migrations during application
+rollback.
 
 ## Deployment user hardening
 
 GitHub Actions currently connects as `jenda`.
 
-Because `jenda` belongs to the Docker group, this effectively provides very powerful server access.
+Because `jenda` belongs to the Docker group, this effectively provides
+very powerful server access.
 
 A more mature setup could use:
 
-```text
+``` text
 dedicated deploy user
 +
 restricted SSH permissions
@@ -695,7 +801,8 @@ restricted deployment command/script
 
 ## GHCR credentials on Basecamp
 
-Use a dedicated read-only credential for production image pulls rather than a broader personal credential.
+Use a dedicated read-only credential for production image pulls rather
+than a broader personal credential.
 
 ## Monitoring
 
@@ -703,7 +810,7 @@ There is currently no proper monitoring/alerting.
 
 Potential future additions:
 
-```text
+``` text
 uptime monitoring
 application error tracking
 CPU/RAM/disk monitoring
@@ -711,33 +818,40 @@ disk-space alerts
 database monitoring
 ```
 
+## E2E tests in CI
+
+Playwright E2E tests exist in the repository but are not currently executed
+by the GitHub Actions verification job.
+
+The current CI gate covers:
+
+- migrations against a fresh PostgreSQL database
+- lint
+- integration tests
+
+A future improvement is to build/start the application in CI and run
+`test:e2e` before allowing deployment.
+
 ## Email
 
 Payload currently has no production email adapter configured.
 
 This will matter for features such as:
 
-```text
+``` text
 password reset
 transactional email
 notifications
 ```
 
-## Deployment concurrency
-
-Prevent two deployments from modifying production simultaneously if two commits are pushed close together.
-
-GitHub Actions concurrency controls can be used for this.
-
----
-
 # 15. Current status
 
 Working:
 
-```text
+``` text
 ✅ VPS
 ✅ SSH hardening
+✅ pinned SSH host verification
 ✅ firewall
 ✅ fail2ban
 ✅ Docker
@@ -750,25 +864,36 @@ Working:
 ✅ Next.js
 ✅ Payload CMS
 ✅ Payload migrations
+✅ user roles and access control
+✅ access-control integration tests
+✅ optimized migration Docker target
 ✅ Docker production build
 ✅ GHCR
 ✅ immutable SHA images
+✅ CI quality gate (migrations + lint + integration tests)
+   * Playwright end-to-end tests (`test:e2e`) are currently not part of the CI
+   quality gate. The repository contains E2E coverage, but CI currently runs
+   only migrations, lint, and integration tests. Adding E2E execution to CI
+   requires building/starting the application and is a future improvement.
 ✅ GitHub Actions build
 ✅ automatic migrations
 ✅ automatic deployment
+✅ database-aware health endpoint
+✅ Docker healthcheck
+✅ automatic application + Compose rollback
+✅ rollback refused after applied DB migration
+✅ tested healthy, rollback, and migration-guard paths
+✅ serialized production deployments (GitHub Actions concurrency)
 ```
 
 Still to do:
 
-```text
-⬜ CI tests / quality gate
+``` text
 ⬜ PostgreSQL backups + restore testing
 ⬜ persistent/object storage for Payload Media
-⬜ deployment health checks
-⬜ migration/rollback strategy
+⬜ further migration strategy hardening
 ⬜ restricted deployment user
 ⬜ dedicated read-only GHCR credentials
 ⬜ monitoring / alerts
 ⬜ production email
-⬜ deployment concurrency
 ```
