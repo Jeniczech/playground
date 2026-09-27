@@ -494,8 +494,13 @@ There is deliberately no `latest` fallback.
 Before replacing `compose.yml`, the workflow copies the current file to
 `compose.yml.previous`. If an application rollback is safe and required,
 both the previous Compose configuration and the previous SHA-tagged
-image are restored. On a successful deployment the temporary previous
-Compose file is removed.
+image are restored. Before replacing `compose.yml`, the workflow copies the current file to
+`compose.yml.previous`. The previous configuration is intentionally retained
+after a successful deployment as one generation of last-known-good
+configuration for manual recovery.
+
+Before the next deployment it is replaced with the then-current production
+configuration.
 
 The application exposes `GET /api/health`. The endpoint performs a small
 Payload query against the `users` collection, so a healthy result

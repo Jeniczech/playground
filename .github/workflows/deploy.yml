@@ -267,7 +267,6 @@ jobs:
               done
 
               if [ "$HEALTHY" = "true" ]; then
-                rm -f compose.yml.previous
                 echo "Deployment complete — application is healthy"
                 exit 0
               fi
