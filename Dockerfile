@@ -38,7 +38,17 @@ RUN pnpm run build
 # Database migrations
 # ----------------------------
 
-FROM builder AS migration
+FROM base AS migration-deps
+RUN apk add --no-cache libc6-compat
+WORKDIR /app
+
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+RUN pnpm install --prod --frozen-lockfile
+
+FROM migration-deps AS migration
+WORKDIR /app
+
+COPY . .
 
 CMD ["pnpm", "payload", "migrate"]
 
