@@ -856,6 +856,7 @@ Working:
 ✅ fail2ban
 ✅ Docker
 ✅ shared Docker network
+✅ shared infrastructure configuration versioned in Git (`Jeniczech/basecamp-infra`)
 ✅ PostgreSQL
 ✅ separate application DB/user
 ✅ Caddy
