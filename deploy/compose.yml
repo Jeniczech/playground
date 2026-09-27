@@ -1,6 +1,6 @@
 services:
   app:
-    image: ghcr.io/jeniczech/playground:${IMAGE_TAG:-latest}
+    image: "ghcr.io/jeniczech/playground:${IMAGE_TAG:?IMAGE_TAG must be set}"
     restart: unless-stopped
     environment:
       DATABASE_URL: ${DATABASE_URL}

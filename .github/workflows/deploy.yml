@@ -87,9 +87,7 @@ jobs:
           target: runner
           platforms: linux/amd64
           push: true
-          tags: |
-            ghcr.io/jeniczech/playground:latest
-            ghcr.io/jeniczech/playground:${{ github.sha }}
+          tags: ghcr.io/jeniczech/playground:${{ github.sha }}
 
       - name: Build and push migration image
         uses: docker/build-push-action@v6
@@ -98,9 +96,7 @@ jobs:
           target: migration
           platforms: linux/amd64
           push: true
-          tags: |
-            ghcr.io/jeniczech/playground:migration
-            ghcr.io/jeniczech/playground:migration-${{ github.sha }}
+          tags: ghcr.io/jeniczech/playground:migration-${{ github.sha }}
 
   deploy:
     needs: build
@@ -233,6 +229,11 @@ jobs:
               fi
 
               PREVIOUS_TAG="${PREVIOUS_IMAGE##*:}"
+          
+              if ! printf '%s' "$PREVIOUS_TAG" | grep -Eq '^[0-9a-f]{40}$'; then
+                echo "Refusing rollback: previous image is not tagged with an immutable Git SHA: $PREVIOUS_IMAGE"
+                exit 1
+              fi
 
               echo "Rolling back to $PREVIOUS_IMAGE"
 
