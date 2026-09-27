@@ -145,23 +145,131 @@ jobs:
 
               cd "$APP_DIR"
 
+              #
+              # Validate the new Compose configuration before touching
+              # the running application.
+              #
               IMAGE_TAG="$SHA" \
                 docker compose \
                 --env-file .env \
                 -f compose.yml.new \
                 config --quiet
 
+              #
+              # Remember the image that is currently running.
+              #
+              PREVIOUS_IMAGE="$(
+                docker compose ps -q app \
+                  | xargs -r docker inspect \
+                    --format '{{.Config.Image}}'
+              )"
+
+              echo "Previous image: ${PREVIOUS_IMAGE:-none}"
+
+              #
+              # Pull immutable images for this release.
+              #
               docker pull "ghcr.io/jeniczech/playground:migration-$SHA"
               docker pull "ghcr.io/jeniczech/playground:$SHA"
 
+              #
+              # Run database migrations.
+              #
               docker run --rm \
                 --network basecamp-network \
                 --env-file "$APP_DIR/.env" \
                 "ghcr.io/jeniczech/playground:migration-$SHA"
 
+              #
+              # Activate the new Compose configuration.
+              #
               mv compose.yml.new compose.yml
 
+              #
+              # Start the new application.
+              #
               IMAGE_TAG="$SHA" docker compose up -d
 
-              echo "Deployment complete"
+              APP_CONTAINER="$(docker compose ps -q app)"
+
+              echo "Waiting for application health..."
+
+              HEALTHY=false
+
+              for attempt in $(seq 1 12); do
+                STATUS="$(
+                  docker inspect \
+                    --format '{{if .State.Health}}{{.State.Health.Status}}{{else}}none{{end}}' \
+                    "$APP_CONTAINER"
+                )"
+
+                echo "Health check $attempt/12: $STATUS"
+
+                if [ "$STATUS" = "healthy" ]; then
+                  HEALTHY=true
+                  break
+                fi
+
+                if [ "$STATUS" = "unhealthy" ]; then
+                  break
+                fi
+
+                sleep 5
+              done
+
+              if [ "$HEALTHY" = "true" ]; then
+                echo "Deployment complete — application is healthy"
+                exit 0
+              fi
+
+              echo "New application failed health check"
+
+              #
+              # Roll back to the image that was running before this deploy.
+              #
+              if [ -z "$PREVIOUS_IMAGE" ]; then
+                echo "No previous image available for rollback"
+                exit 1
+              fi
+
+              PREVIOUS_TAG="${PREVIOUS_IMAGE##*:}"
+
+              echo "Rolling back to $PREVIOUS_IMAGE"
+
+              IMAGE_TAG="$PREVIOUS_TAG" docker compose up -d
+
+              ROLLBACK_CONTAINER="$(docker compose ps -q app)"
+
+              echo "Waiting for rollback health..."
+
+              ROLLBACK_HEALTHY=false
+
+              for attempt in $(seq 1 12); do
+                STATUS="$(
+                  docker inspect \
+                    --format '{{if .State.Health}}{{.State.Health.Status}}{{else}}none{{end}}' \
+                    "$ROLLBACK_CONTAINER"
+                )"
+
+                echo "Rollback health check $attempt/12: $STATUS"
+
+                if [ "$STATUS" = "healthy" ]; then
+                  ROLLBACK_HEALTHY=true
+                  break
+                fi
+
+                if [ "$STATUS" = "unhealthy" ]; then
+                  break
+                fi
+
+                sleep 5
+              done
+
+              if [ "$ROLLBACK_HEALTHY" = "true" ]; then
+                echo "Rollback successful — previous application restored"
+                exit 1
+              fi
+
+              echo "ROLLBACK FAILED — application is unhealthy"
+              exit 1
           EOF
