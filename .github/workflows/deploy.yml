@@ -5,6 +5,10 @@ on:
     branches:
       - main
 
+concurrency:
+  group: playground-production
+  cancel-in-progress: false
+
 permissions:
   contents: read
   packages: write
