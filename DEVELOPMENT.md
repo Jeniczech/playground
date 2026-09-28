@@ -17,9 +17,9 @@ PostgreSQL
 Docker
 ```
 
-Docker is used locally for PostgreSQL.
+The recommended local development workflow runs PostgreSQL in Docker while Next.js / Payload runs directly on the host. This gives the application the normal Next.js development experience while keeping the database isolated and reproducible.
 
-The Next.js application can be run directly on the host during development.
+The local Docker Compose configuration can also run the application container, so the entire stack can be started in Docker when testing the containerized setup. This is useful for verification, but it is not the primary development workflow.
 
 ---
 
@@ -160,7 +160,11 @@ The migration files are the source of truth for schema evolution.
 
 ---
 
-# 7. Start development server
+# 7. Start the application
+
+## Recommended development workflow
+
+With PostgreSQL running in Docker, start Next.js / Payload directly on the host:
 
 ```bash
 pnpm dev
@@ -172,9 +176,23 @@ Open:
 http://localhost:3000
 ```
 
+In this mode the application uses the host-side `.env`, where PostgreSQL is available at `127.0.0.1:5432`. This is the primary workflow for day-to-day development.
+
 Payload Admin is available through the Payload admin route configured by the application.
 
 On a completely fresh database, create the first Payload user through the admin interface when prompted.
+
+## Full Docker stack
+
+The local Compose configuration can also run both the application and PostgreSQL:
+
+```bash
+docker compose up
+```
+
+In this mode both services run inside Docker and the application connects to PostgreSQL using the Compose service hostname `postgres` rather than `127.0.0.1`.
+
+This mode is useful for testing the containerized application locally, but it is not the primary development workflow.
 
 ---
 
@@ -356,7 +374,7 @@ The application exposes `GET /api/health`. It performs a small Payload query aga
 
 The deploy and rollback wait loops allow up to roughly two minutes for Docker health to leave `starting`, while still exiting early on `healthy` or `unhealthy`.
 
-If the new application becomes healthy, deployment succeeds and the temporary previous Compose configuration is removed.
+If the new application becomes healthy, deployment succeeds. The previous Compose configuration is intentionally retained as one generation of last-known-good configuration for manual recovery and is replaced before the next deployment.
 
 If the application fails health and **no new migration was pending**, the workflow restores both the previous Compose configuration and the previous SHA-tagged application image, then verifies rollback health. A successful rollback restores production but the workflow still exits as failed because the requested release was not deployed.
 
@@ -394,11 +412,18 @@ Do not manually edit production application code on the VPS. The Git repository 
 
 # 13. Important production differences
 
-Local development:
+Recommended local development:
 
 ```text
-PostgreSQL → localhost:5432
-Next.js    → pnpm dev
+PostgreSQL → Docker, exposed at localhost:5432
+Next.js    → host via pnpm dev
+```
+
+Optional full Docker stack:
+
+```text
+PostgreSQL → Docker service `postgres`
+Next.js    → Docker service `app`
 ```
 
 Production:
