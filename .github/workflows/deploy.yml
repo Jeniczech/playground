@@ -167,6 +167,20 @@ jobs:
               echo "Previous image: ${PREVIOUS_IMAGE:-none}"
 
               #
+              # Reclaim disk before pulling. Every deploy adds two
+              # SHA-tagged images; keep only what a rollback needs.
+              #
+              docker image ls \
+                --format '{{.Repository}}:{{.Tag}}' \
+                ghcr.io/jeniczech/playground \
+                | grep -v ":$SHA\$" \
+                | grep -v ":migration-$SHA\$" \
+                | grep -Fxv "${PREVIOUS_IMAGE:-}" \
+                | xargs -r docker image rm -f || true
+
+              docker image prune -f || true
+
+              #
               # Pull immutable images for this release.
               #
               docker pull "ghcr.io/jeniczech/playground:migration-$SHA"
