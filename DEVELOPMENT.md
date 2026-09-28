@@ -7,7 +7,7 @@ This document describes how to run the Playground project locally after cloning 
 The project uses:
 
 ```text
-Node.js 22.17.0
+Node.js 24.21.0
 pnpm
 Next.js
 React

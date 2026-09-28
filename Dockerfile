@@ -1,4 +1,4 @@
-FROM node:22.17.0-alpine AS base
+FROM node:24.21.0-alpine AS base
 
 # pnpm via Corepack
 RUN npm install -g corepack@0.36.0
