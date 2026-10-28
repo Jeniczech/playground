@@ -251,11 +251,7 @@ Do not make production database schema changes manually.
 
 A code change and its required migration should belong to the same Git commit/release.
 
-Production never automatically rolls the database schema back.
-
-Before migrations run, the deployment workflow detects whether the release contains a migration that is still pending in production. If such a migration is applied and the new application later fails its health check, automatic application rollback is refused because the previous application may not be compatible with the new schema.
-
-For significant schema evolution, prefer backward-compatible expand/contract migrations. Do not rely on automatic down migrations as a production rollback mechanism.
+For significant schema evolution, prefer backward-compatible expand/contract migrations. Production never automatically rolls the database schema back, and a release that applied a migration is not rolled back automatically — see [DEPLOYMENT.md](DEPLOYMENT.md#6-database-migrations).
 
 ---
 
@@ -352,61 +348,9 @@ verify
 → deploy
 ```
 
-The `verify` job starts PostgreSQL 18, runs migrations, lint, and integration tests. Only after it succeeds are the application and migration images built and pushed to GHCR.
+Every push to `main` deploys to production, including documentation-only changes.
 
-Production images are tagged only with the full Git commit SHA. The production Compose file requires `IMAGE_TAG`; there is no `latest` fallback.
-
-The deployment phase is approximately:
-
-```text
-validate production Compose
-→ remember currently running image
-→ pull SHA-tagged images
-→ detect pending migrations
-→ run migrations
-→ preserve previous Compose config
-→ activate new Compose config
-→ start new application image
-→ wait for Docker health
-```
-
-The application exposes `GET /api/health`. It performs a small Payload query against the `users` collection, so it checks both the application and database connectivity.
-
-The deploy and rollback wait loops allow up to roughly two minutes for Docker health to leave `starting`, while still exiting early on `healthy` or `unhealthy`.
-
-If the new application becomes healthy, deployment succeeds. The previous Compose configuration is intentionally retained as one generation of last-known-good configuration for manual recovery and is replaced before the next deployment.
-
-If the application fails health and **no new migration was pending**, the workflow restores both the previous Compose configuration and the previous SHA-tagged application image, then verifies rollback health. A successful rollback restores production but the workflow still exits as failed because the requested release was not deployed.
-
-If the release **did have a pending migration** and the migration step completed, automatic rollback is refused. The older application is not started unattended against the newly migrated schema; manual intervention is required instead.
-
-Both the ordinary rollback path and the migration rollback-refusal guard have been deliberately tested.
-
-Production deployments are serialized with GitHub Actions concurrency:
-
-```yaml
-concurrency:
-  group: playground-production
-  cancel-in-progress: false
-```
-
-This prevents overlapping workflows from racing over the production Compose files, container state, and rollback decision.
-
-The production Docker Compose source of truth is:
-
-```text
-deploy/compose.yml
-```
-
-The CI/CD workflow is:
-
-```text
-.github/workflows/deploy.yml
-```
-
-Do not confuse these two files.
-
-Do not manually edit production application code on the VPS. The Git repository should remain the source of truth.
+Images, the CI/CD pipeline, health checks, rollback behavior and production secrets are documented in [DEPLOYMENT.md](DEPLOYMENT.md).
 
 ---
 
@@ -429,13 +373,13 @@ Next.js    → Docker service `app`
 Production:
 
 ```text
-PostgreSQL → shared Docker network
-Next.js    → Docker image
+PostgreSQL → shared Basecamp server, reached as `postgres` on basecamp-network
+Next.js    → SHA-tagged Docker image
 HTTPS      → Caddy
 Deployment → GitHub Actions
 ```
 
-Production secrets live on Basecamp and must not be copied into Git.
+Production secrets live on Basecamp and must not be copied into Git. See [DEPLOYMENT.md](DEPLOYMENT.md).
 
 ---
 
