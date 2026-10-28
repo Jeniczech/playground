@@ -7,10 +7,16 @@
   --color-night-blue: #153465;
   --color-night-blue-10: rgb(21 52 101 / 0.1);
   --color-morning-blue: #dae5ff;
+  --color-white: #ffffff;
+  --color-slate-blue: #4c6489;
+  --color-ink: #101c30;
+  --color-sun-yellow: #ffc33a;
+  --color-mist-blue: #e5edff;
 
   --color-text: var(--color-night-blue);
   --color-background: var(--color-morning-blue);
   --color-divider: var(--color-night-blue-10);
+  --color-text-muted: var(--color-slate-blue);
 
   /* Font families (loaded with next/font in the frontend layout) */
   --font-display: var(--font-instrument-serif), Georgia, 'Times New Roman', serif;
@@ -19,13 +25,34 @@
   /* Font weights */
   --font-weight-regular: 400;
   --font-weight-semibold: 600;
+  --font-weight-bold: 700;
 
   /* Text styles */
   --text-body-s-size: 14px;
   --text-body-s-line-height: normal;
 
+  --text-body-xs-size: 12px;
+  --text-body-xs-line-height: normal;
+
   --text-wordmark-size: 22px;
   --text-wordmark-line-height: 22px;
+
+  --text-display-xl-size: 92px;
+  --text-display-xl-line-height: 0.97;
+  --text-display-xl-letter-spacing: -0.02em;
+
+  --text-body-l-size: 17px;
+  --text-body-l-line-height: 1.65;
+
+  --text-eyebrow-size: 11px;
+  --text-eyebrow-line-height: 14px;
+  --text-eyebrow-letter-spacing: 0.12em;
+
+  --text-button-line-height: 22px;
+
+  --text-store-badge-caption-size: 9px;
+  --text-store-badge-name-size: 19px;
+  --text-store-badge-name-size-long: 17px;
 
   /* Spacing */
   --space-2: 8px;
@@ -34,6 +61,15 @@
   --space-5: 20px;
   --space-6: 24px;
   --space-8: 32px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  /* Radius */
+  --radius-md: 10px;
+  --radius-pill: 999px;
+
+  /* Shadow */
+  --shadow-phone: 0 12px 24px rgb(21 52 101 / 0.09);
 
   /* Layout */
   --page-gutter: 88px;
@@ -45,5 +81,7 @@
 
   @media (max-width: 768px) {
     --page-gutter: 24px;
+    /* No mobile hero design yet; 52px keeps "Discover Prague" on one line at 375px. */
+    --text-display-xl-size: 52px;
   }
 }

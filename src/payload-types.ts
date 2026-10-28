@@ -85,8 +85,12 @@ export interface Config {
     defaultIDType: number;
   };
   fallbackLocale: null;
-  globals: {};
-  globalsSelect: {};
+  globals: {
+    hero: Hero;
+  };
+  globalsSelect: {
+    hero: HeroSelect<false> | HeroSelect<true>;
+  };
   locale: null;
   widgets: {
     collections: CollectionsWidget;
@@ -274,6 +278,44 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   batch?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "hero".
+ */
+export interface Hero {
+  id: number;
+  eyebrow: string;
+  heading: string;
+  description: string;
+  appStoreUrl: string;
+  googlePlayUrl: string;
+  /**
+   * Short line shown next to the footprints icon.
+   */
+  note: string;
+  /**
+   * Yellow tag under the Golem in the illustration.
+   */
+  tag: string;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "hero_select".
+ */
+export interface HeroSelect<T extends boolean = true> {
+  eyebrow?: T;
+  heading?: T;
+  description?: T;
+  appStoreUrl?: T;
+  googlePlayUrl?: T;
+  note?: T;
+  tag?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

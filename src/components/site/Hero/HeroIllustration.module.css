@@ -1,0 +1,85 @@
+/*
+ * A fixed 600×612 composition (Figma 11502:18504), scaled to the stage width.
+ * --u is one Figma pixel; it resolves against the stage because the stage is the
+ * children's query container. Rotated layers are placed by their centre.
+ */
+.stage {
+  --u: calc(100cqw / 600);
+
+  position: relative;
+  container-type: inline-size;
+  width: 100%;
+  max-width: 600px;
+  aspect-ratio: 600 / 612;
+}
+
+.halo,
+.route,
+.golem,
+.liveHuntPhone,
+.discoveryPhone,
+.tag {
+  position: absolute;
+}
+
+.halo {
+  left: calc(25 * var(--u));
+  top: calc(36 * var(--u));
+  width: calc(550 * var(--u));
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--color-mist-blue);
+}
+
+.route {
+  left: calc(40 * var(--u));
+  top: calc(19.4 * var(--u));
+  width: calc(500.25 * var(--u));
+  height: auto;
+  max-width: none;
+}
+
+.liveHuntPhone,
+.discoveryPhone,
+.tag {
+  translate: -50% -50%;
+}
+
+.liveHuntPhone {
+  --phone-width: calc(234 * var(--u));
+  --phone-aspect-ratio: 234 / 493.282;
+
+  left: calc(402.07 * var(--u));
+  top: calc(313.76 * var(--u));
+  rotate: 5deg;
+}
+
+.discoveryPhone {
+  --phone-width: calc(252 * var(--u));
+
+  left: calc(158.28 * var(--u));
+  top: calc(257.06 * var(--u));
+  rotate: -4deg;
+}
+
+.golem {
+  left: calc(207 * var(--u));
+  top: calc(410 * var(--u));
+  width: calc(152 * var(--u));
+  height: auto;
+}
+
+/* Figma: Body XS Semibold. Text keeps its size when the stage scales down. */
+.tag {
+  left: calc(279.18 * var(--u));
+  top: calc(593.25 * var(--u));
+  rotate: -3deg;
+  margin: 0;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-pill);
+  background: var(--color-sun-yellow);
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--text-body-xs-size);
+  line-height: var(--text-body-xs-line-height);
+  white-space: nowrap;
+}

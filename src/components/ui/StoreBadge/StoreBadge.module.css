@@ -1,0 +1,40 @@
+.storeBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  width: 180px;
+  height: 54px;
+  padding-inline: var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--color-ink);
+  color: var(--color-white);
+  font-family: var(--font-body);
+  line-height: normal;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.icon {
+  flex-shrink: 0;
+  width: 24px;
+  height: 27px;
+}
+
+.label {
+  display: flex;
+  flex-direction: column;
+}
+
+.caption {
+  font-weight: var(--font-weight-regular);
+  font-size: var(--text-store-badge-caption-size);
+}
+
+.name {
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--text-store-badge-name-size);
+}
+
+.storeBadge[data-store='google-play'] .name {
+  font-size: var(--text-store-badge-name-size-long);
+}
