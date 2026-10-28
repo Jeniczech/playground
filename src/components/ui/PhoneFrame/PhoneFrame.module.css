@@ -1,0 +1,25 @@
+/*
+ * Size it by setting --phone-width (and --phone-aspect-ratio where a Figma frame differs);
+ * the corner radius scales with the width like the Figma frames do.
+ */
+.phoneFrame {
+  --phone-border: 3px;
+  --phone-radius: calc(var(--phone-width, 270px) * 0.1163);
+
+  position: relative;
+  width: var(--phone-width, 270px);
+  aspect-ratio: var(--phone-aspect-ratio, 252 / 532.305);
+  border: var(--phone-border) solid var(--color-night-blue);
+  border-radius: var(--phone-radius);
+  background: var(--color-morning-blue);
+  box-shadow: var(--shadow-phone);
+  overflow: hidden;
+}
+
+.screen {
+  position: absolute;
+  inset: var(--phone-border);
+  border-radius: calc(var(--phone-radius) - var(--phone-border));
+  background: var(--color-morning-blue);
+  overflow: hidden;
+}

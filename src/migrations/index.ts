@@ -1,6 +1,7 @@
 import * as migration_20260924_120216 from './20260924_120216';
 import * as migration_20260927_133638_add_user_roles from './20260927_133638_add_user_roles';
 import * as migration_20261028_220745_remove_posts_and_media from './20261028_220745_remove_posts_and_media';
+import * as migration_20261028_224257_add_hero_global from './20261028_224257_add_hero_global';
 
 export const migrations = [
   {
@@ -16,6 +17,11 @@ export const migrations = [
   {
     up: migration_20261028_220745_remove_posts_and_media.up,
     down: migration_20261028_220745_remove_posts_and_media.down,
-    name: '20261028_220745_remove_posts_and_media'
+    name: '20261028_220745_remove_posts_and_media',
+  },
+  {
+    up: migration_20261028_224257_add_hero_global.up,
+    down: migration_20261028_224257_add_hero_global.down,
+    name: '20261028_224257_add_hero_global'
   },
 ];
