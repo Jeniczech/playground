@@ -231,6 +231,17 @@ There is currently no error tracking for the application.
 
 Payload has no production email adapter configured. This will matter for password reset, transactional email and notifications.
 
+## GitHub Actions on Node 20
+
+GitHub has deprecated Node 20 for JavaScript actions, so the runner forces these actions in `.github/workflows/deploy.yml` onto Node 24 and logs a warning:
+
+- `actions/checkout@v4`
+- `docker/setup-buildx-action@v3`
+- `docker/login-action@v3`
+- `docker/build-push-action@v6`
+
+Upgrade them to releases that target Node 24.
+
 ---
 
 # 9. Current status
@@ -261,4 +272,5 @@ Still to do:
 ⬜ E2E tests in CI
 ⬜ application error tracking
 ⬜ production email
+⬜ GitHub Actions upgrade off Node 20
 ```
