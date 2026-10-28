@@ -31,4 +31,5 @@ pnpm test:int
 
 - Never push directly to `main`. Every push to `main` deploys to production, including docs-only changes.
 - Work on a branch and open a pull request with `gh pr create`.
+- CI does not run on pull requests; lint, migrations and integration tests only run after merging to `main`, right before deployment. Run the checks above locally before opening a PR.
 - Never commit `.env` files or secrets.
