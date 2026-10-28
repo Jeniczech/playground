@@ -106,6 +106,10 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: read
+      packages: read
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -179,6 +183,18 @@ jobs:
                 | xargs -r docker image rm -f || true
 
               docker image prune -f || true
+
+              #
+              # Log in to GHCR with this run's short-lived GITHUB_TOKEN,
+              # so Basecamp does not need a long-lived registry credential.
+              # Log out on exit so the token is not left on the server.
+              #
+              trap 'docker logout ghcr.io >/dev/null 2>&1 || true' EXIT
+
+              printf '%s' "${{ secrets.GITHUB_TOKEN }}" \
+                | docker login ghcr.io \
+                  --username "${{ github.actor }}" \
+                  --password-stdin
 
               #
               # Pull immutable images for this release.
