@@ -2,7 +2,6 @@ import { RichText } from '@payloadcms/richtext-lexical/react'
 import { getPayload } from 'payload'
 
 import config from '@/payload.config'
-import './styles.css'
 
 export const dynamic = 'force-dynamic'
 
@@ -19,7 +18,7 @@ export default async function HomePage() {
   })
 
   return (
-    <main>
+    <>
       {posts.docs.map((post) => (
         <article key={post.id}>
           <h2>{post.title}</h2>
@@ -27,6 +26,6 @@ export default async function HomePage() {
           {post.content && <RichText data={post.content} />}
         </article>
       ))}
-    </main>
+    </>
   )
 }
