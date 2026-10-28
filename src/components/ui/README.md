@@ -36,12 +36,13 @@ Body S is 100% line height in Figma, but the text box renders at `normal` (18px)
 | `--space-2`       | 8px                                     |
 | `--space-3`       | 12px                                    |
 | `--space-4`       | 16px                                    |
+| `--space-5`       | 20px                                    |
 | `--space-6`       | 24px                                    |
 | `--space-8`       | 32px                                    |
-| `--page-gutter`   | 88px (40 ≤1024, 24 ≤768, 16 ≤480)       |
+| `--page-gutter`   | 88px (40 ≤1024, 24 ≤768)                |
 | `--header-height` | 96px                                    |
 
-The smaller gutters are assumptions until there is a mobile design.
+The 40px tablet gutter is an assumption; there is no tablet design yet. Mobile (24px) comes from the mobile header `11502:18975`.
 
 ## Components (`src/components/ui/`)
 
@@ -54,7 +55,7 @@ The smaller gutters are assumptions until there is a mobile design.
 
 | Section      | Figma node            | CMS                                     |
 | ------------ | --------------------- | --------------------------------------- |
-| `SiteHeader` | Site header `11502:18467` | None, nav links are hard-coded            |
+| `SiteHeader` | Desktop `11502:18467`, mobile (≤560px) `11502:18975` | None, nav links are hard-coded            |
 
 ## Assets (`public/brand/`)
 

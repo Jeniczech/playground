@@ -14,7 +14,7 @@ export function SiteHeader() {
     <header className={styles.siteHeader}>
       <Logo />
 
-      <nav aria-label="Main">
+      <nav aria-label="Main" className={styles.nav}>
         <ul className={styles.navList}>
           {navItems.map((item) => (
             <li key={item.href}>
