@@ -202,8 +202,6 @@ Current collections:
 
 ```text
 Users
-Media
-Posts
 ```
 
 Collection definitions live under:
@@ -215,7 +213,7 @@ src/collections/
 For example:
 
 ```text
-src/collections/Posts.ts
+src/collections/Users.ts
 ```
 
 Payload configuration:
@@ -264,8 +262,8 @@ Example:
 ```ts
 const payload = await getPayload({ config })
 
-const posts = await payload.find({
-  collection: 'posts',
+const users = await payload.find({
+  collection: 'users',
 })
 ```
 
