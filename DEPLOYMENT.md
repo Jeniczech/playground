@@ -106,6 +106,7 @@ build
 deploy
   ├── upload and validate production Compose config
   ├── remember currently running application image
+  ├── log in to GHCR with the run's GITHUB_TOKEN
   ├── pull migration-<SHA> and app:<SHA>
   ├── detect whether the release has pending DB migrations
   ├── run Payload migrations
@@ -193,13 +194,15 @@ PAYLOAD_SECRET
 
 Its permissions are restricted. GitHub Actions additionally stores SSH-related secrets.
 
+Basecamp does not store a GHCR credential for this application. The deploy job logs the server in to GHCR with the workflow run's short-lived `GITHUB_TOKEN` (`packages: read`), pulls the release images, and logs out when the deploy script exits. Rollback uses the previous image that is already present on the server, so it needs no registry access.
+
 `.env` files are excluded from Git and from the Docker build context. Secrets must never be committed into the repository or baked into Docker images.
 
 ---
 
 # 8. What is still missing
 
-Server-wide items (PostgreSQL backups, deployment user hardening, GHCR credentials, server monitoring) are tracked in `Jeniczech/basecamp-infra`.
+Server-wide items (PostgreSQL backups, deployment user hardening, server monitoring) are tracked in `Jeniczech/basecamp-infra`.
 
 ## Payload Media persistence — high priority before using uploads
 
