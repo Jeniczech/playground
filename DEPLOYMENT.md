@@ -204,11 +204,9 @@ Basecamp does not store a GHCR credential for this application. The deploy job l
 
 Server-wide items (PostgreSQL backups, deployment user hardening, server monitoring) are tracked in `Jeniczech/basecamp-infra`.
 
-## Payload Media persistence — high priority before using uploads
+## Upload persistence — required before adding an upload collection
 
-Files written only inside the application container are ephemeral and can be lost when the container is recreated.
-
-Before relying on Payload Media uploads, configure either a persistent Docker volume or, preferably, S3-compatible object storage.
+There is no upload collection today. Files written only inside the application container are ephemeral and can be lost when the container is recreated, so any future upload collection needs a persistent Docker volume or, preferably, S3-compatible object storage.
 
 ## Database migration conventions
 
@@ -256,7 +254,6 @@ Working:
 Still to do:
 
 ```text
-⬜ persistent/object storage for Payload Media
 ⬜ further migration strategy hardening
 ⬜ E2E tests in CI
 ⬜ application error tracking

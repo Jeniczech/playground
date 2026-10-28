@@ -12,7 +12,7 @@ Node.js 24 · pnpm · Next.js · React · TypeScript · Payload CMS · PostgreSQ
 
 Payload is embedded in the Next.js app: the same process serves the frontend, the Payload admin, the REST API and the Local API used by Server Components.
 
-Collections: `Users` (roles `admin` / `editor`), `Media`, `Posts`.
+Collections: `Users` (roles `admin` / `editor`).
 
 ## Quick start
 
