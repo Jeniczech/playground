@@ -14,6 +14,10 @@ Start with `.claude/skills/payload/SKILL.md` for a quick reference, then see `.c
 - Collections live in `src/collections/`, config in `src/payload.config.ts`, generated types in `src/payload-types.ts` (`pnpm generate:types`).
 - The Local API skips access control by default. Public queries must enforce business rules explicitly (e.g. `published = true`), and access-control tests must pass `overrideAccess: false` plus the user being tested.
 
+## Code style
+
+- Add comments only when absolutely necessary: explain why something non-obvious is done, never restate what the code does.
+
 ## Schema changes
 
 - Every schema change ships with a migration in `src/migrations/`, in the same commit as the code change (`pnpm payload migrate:create`, then review the generated file).

@@ -1,0 +1,49 @@
+/*
+ * Design tokens. Names mirror the Figma variables in
+ * "Prague Scavenger Hunt App – Resources". See src/components/ui/README.md.
+ */
+:root {
+  /* Color */
+  --color-night-blue: #153465;
+  --color-night-blue-10: rgb(21 52 101 / 0.1);
+  --color-morning-blue: #dae5ff;
+
+  --color-text: var(--color-night-blue);
+  --color-background: var(--color-morning-blue);
+  --color-divider: var(--color-night-blue-10);
+
+  /* Font families (loaded with next/font in the frontend layout) */
+  --font-display: var(--font-instrument-serif), Georgia, 'Times New Roman', serif;
+  --font-body: var(--font-plus-jakarta-sans), system-ui, sans-serif;
+
+  /* Font weights */
+  --font-weight-regular: 400;
+  --font-weight-semibold: 600;
+
+  /* Text styles */
+  --text-body-s-size: 14px;
+  --text-body-s-line-height: normal;
+
+  --text-wordmark-size: 22px;
+  --text-wordmark-line-height: 22px;
+
+  /* Spacing */
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+
+  /* Layout */
+  --page-gutter: 88px;
+  --header-height: 96px;
+
+  @media (max-width: 1024px) {
+    --page-gutter: 40px;
+  }
+
+  @media (max-width: 768px) {
+    --page-gutter: 24px;
+  }
+}

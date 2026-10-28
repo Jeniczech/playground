@@ -1,0 +1,16 @@
+/* Figma text style: Body S Semibold */
+.navLink {
+  display: block;
+  font-family: var(--font-body);
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--text-body-s-size);
+  line-height: var(--text-body-s-line-height);
+  color: var(--color-text);
+  text-decoration: none;
+  white-space: nowrap;
+
+  &:hover {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+}
