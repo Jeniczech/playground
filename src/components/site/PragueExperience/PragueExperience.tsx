@@ -16,6 +16,14 @@ const screens = [
     src: '/brand/screens/live-hunt.webp',
     alt: 'Live hunt screen of the app: task progress, score and a map of the next locations',
   },
+  {
+    src: '/brand/screens/task.webp',
+    alt: 'Task screen of the app: a map of the location, Golem’s clue and a multiple-choice question',
+  },
+  {
+    src: '/brand/screens/rank.webp',
+    alt: 'Rank screen of the app: the all-time leaderboard of explorers and their points',
+  },
 ]
 
 type PragueExperienceProps = {
