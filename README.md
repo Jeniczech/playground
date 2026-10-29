@@ -30,4 +30,5 @@ Then open `http://localhost:3000`. A `.env` with `DATABASE_URL` and `PAYLOAD_SEC
 
 - [DEVELOPMENT.md](DEVELOPMENT.md) – local setup, schema changes, testing
 - [DEPLOYMENT.md](DEPLOYMENT.md) – production images, CI/CD, migrations, rollback
+- [ROADMAP.md](ROADMAP.md) – open items
 - `Jeniczech/basecamp-infra` – the Basecamp server: SSH, Caddy, shared PostgreSQL, adding new apps
