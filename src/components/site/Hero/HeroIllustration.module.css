@@ -62,6 +62,11 @@
   rotate: -4deg;
 }
 
+/* The screenshots are slightly taller than the frames; crop evenly top and bottom. */
+.screenshot {
+  object-fit: cover;
+}
+
 .golem {
   left: calc(207 * var(--u));
   top: calc(410 * var(--u));
