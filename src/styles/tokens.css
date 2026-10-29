@@ -73,6 +73,9 @@
 
   /* Layout */
   --page-gutter: 88px;
+  --page-max-width: 1264px;
+  /* Gutter on small screens; centres the content column once the viewport is wider than max width + gutters. */
+  --page-padding-inline: max(var(--page-gutter), calc((100% - var(--page-max-width)) / 2));
   --header-height: 96px;
 
   @media (max-width: 1024px) {

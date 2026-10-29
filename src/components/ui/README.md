@@ -56,6 +56,8 @@ Body S is 100% line height in Figma, but the text box renders at `normal` (18px)
 | `--space-12`      | 48px                                    |
 | `--space-16`      | 64px                                    |
 | `--page-gutter`   | 88px (40 ≤1024, 24 ≤768)                |
+| `--page-max-width` | 1264px (content width of the 1440px design) |
+| `--page-padding-inline` | Gutter, growing to centre the content once the viewport is wider than 1440px. Use it for section side padding; backgrounds and borders stay full width |
 | `--header-height` | 96px                                    |
 
 The hero snaps Figma's 10px/9px gaps to `--space-2`, its 54/52px vertical padding to `--space-12` and the adventure tag's 14px side padding to `--space-3` (decided with design).
