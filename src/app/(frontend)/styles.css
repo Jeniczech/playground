@@ -7,6 +7,10 @@
 html {
   background: var(--color-background);
   -webkit-font-smoothing: antialiased;
+
+  @media (prefers-reduced-motion: no-preference) {
+    scroll-behavior: smooth;
+  }
 }
 
 body {
