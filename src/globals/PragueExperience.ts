@@ -65,6 +65,17 @@ export const PragueExperience: GlobalConfig = {
       },
       fields: [
         {
+          name: 'screen',
+          type: 'select',
+          options: [
+            { label: 'Explore hunts', value: 'explore-hunts' },
+            { label: 'Live hunt', value: 'live-hunt' },
+          ],
+          admin: {
+            description: 'App screen shown in the phone. Leave empty for a blank phone.',
+          },
+        },
+        {
           name: 'title',
           type: 'text',
           required: true,

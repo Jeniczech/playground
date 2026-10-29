@@ -6,6 +6,11 @@ import { PhoneFrame } from '@/components/ui/PhoneFrame/PhoneFrame'
 
 import styles from './PragueExperience.module.css'
 
+const screens = {
+  'explore-hunts': 'Explore hunts screen of the app: a map of Prague with a hunt starting point nearby',
+  'live-hunt': 'Live hunt screen of the app: task progress, score and a map of the next locations',
+}
+
 type PragueExperienceProps = {
   data: PragueExperienceData
 }
@@ -43,7 +48,17 @@ export function PragueExperience({ data }: PragueExperienceProps) {
           {data.screenshots.map((screenshot, index) => (
             <li key={screenshot.id ?? index}>
               <figure className={styles.screenshot}>
-                <PhoneFrame className={styles.phone} />
+                <PhoneFrame className={styles.phone}>
+                  {screenshot.screen && (
+                    <Image
+                      src={`/brand/screens/${screenshot.screen}.webp`}
+                      alt={screens[screenshot.screen]}
+                      fill
+                      sizes="(max-width: 768px) 162px, 270px"
+                      className={styles.screen}
+                    />
+                  )}
+                </PhoneFrame>
                 <figcaption className={styles.caption}>
                   <span className={styles.captionTitle}>{screenshot.title}</span>
                   <span className={styles.captionDescription}>{screenshot.description}</span>
