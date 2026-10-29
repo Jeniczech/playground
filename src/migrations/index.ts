@@ -5,7 +5,6 @@ import * as migration_20261028_224257_add_hero_global from './20261028_224257_ad
 import * as migration_20261029_094605_add_how_it_works_global from './20261029_094605_add_how_it_works_global';
 import * as migration_20261029_100011_add_prague_experience_global from './20261029_100011_add_prague_experience_global';
 import * as migration_20261029_101726_add_next_adventure_global from './20261029_101726_add_next_adventure_global';
-import * as migration_20261029_115659_add_experience_screens from './20261029_115659_add_experience_screens';
 
 export const migrations = [
   {
@@ -41,11 +40,6 @@ export const migrations = [
   {
     up: migration_20261029_101726_add_next_adventure_global.up,
     down: migration_20261029_101726_add_next_adventure_global.down,
-    name: '20261029_101726_add_next_adventure_global',
-  },
-  {
-    up: migration_20261029_115659_add_experience_screens.up,
-    down: migration_20261029_115659_add_experience_screens.down,
-    name: '20261029_115659_add_experience_screens'
+    name: '20261029_101726_add_next_adventure_global'
   },
 ];

@@ -352,10 +352,6 @@ export interface PragueExperience {
    * Captions under the phone previews, in order.
    */
   screenshots: {
-    /**
-     * App screen shown in the phone. Leave empty for a blank phone.
-     */
-    screen?: ('explore-hunts' | 'live-hunt') | null;
     title: string;
     description: string;
     id?: string | null;
@@ -437,7 +433,6 @@ export interface PragueExperienceSelect<T extends boolean = true> {
   screenshots?:
     | T
     | {
-        screen?: T;
         title?: T;
         description?: T;
         id?: T;

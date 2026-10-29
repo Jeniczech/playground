@@ -6,10 +6,17 @@ import { PhoneFrame } from '@/components/ui/PhoneFrame/PhoneFrame'
 
 import styles from './PragueExperience.module.css'
 
-const screens = {
-  'explore-hunts': 'Explore hunts screen of the app: a map of Prague with a hunt starting point nearby',
-  'live-hunt': 'Live hunt screen of the app: task progress, score and a map of the next locations',
-}
+// Matched to the four screenshot captions by position.
+const screens = [
+  {
+    src: '/brand/screens/explore-hunts.webp',
+    alt: 'Explore hunts screen of the app: a map of Prague with a hunt starting point nearby',
+  },
+  {
+    src: '/brand/screens/live-hunt.webp',
+    alt: 'Live hunt screen of the app: task progress, score and a map of the next locations',
+  },
+]
 
 type PragueExperienceProps = {
   data: PragueExperienceData
@@ -45,27 +52,31 @@ export function PragueExperience({ data }: PragueExperienceProps) {
         </div>
 
         <ul className={styles.gallery}>
-          {data.screenshots.map((screenshot, index) => (
-            <li key={screenshot.id ?? index}>
-              <figure className={styles.screenshot}>
-                <PhoneFrame className={styles.phone}>
-                  {screenshot.screen && (
-                    <Image
-                      src={`/brand/screens/${screenshot.screen}.webp`}
-                      alt={screens[screenshot.screen]}
-                      fill
-                      sizes="(max-width: 768px) 162px, 270px"
-                      className={styles.screen}
-                    />
-                  )}
-                </PhoneFrame>
-                <figcaption className={styles.caption}>
-                  <span className={styles.captionTitle}>{screenshot.title}</span>
-                  <span className={styles.captionDescription}>{screenshot.description}</span>
-                </figcaption>
-              </figure>
-            </li>
-          ))}
+          {data.screenshots.map((screenshot, index) => {
+            const screen = screens[index]
+
+            return (
+              <li key={screenshot.id ?? index}>
+                <figure className={styles.screenshot}>
+                  <PhoneFrame className={styles.phone}>
+                    {screen && (
+                      <Image
+                        src={screen.src}
+                        alt={screen.alt}
+                        fill
+                        sizes="(max-width: 768px) 162px, 270px"
+                        className={styles.screen}
+                      />
+                    )}
+                  </PhoneFrame>
+                  <figcaption className={styles.caption}>
+                    <span className={styles.captionTitle}>{screenshot.title}</span>
+                    <span className={styles.captionDescription}>{screenshot.description}</span>
+                  </figcaption>
+                </figure>
+              </li>
+            )
+          })}
         </ul>
       </section>
     </section>
