@@ -1,6 +1,7 @@
 import React from 'react'
 import { Instrument_Serif, Plus_Jakarta_Sans } from 'next/font/google'
 
+import { SiteFooter } from '@/components/site/SiteFooter/SiteFooter'
 import { SiteHeader } from '@/components/site/SiteHeader/SiteHeader'
 import './styles.css'
 
@@ -28,6 +29,7 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
       <body>
         <SiteHeader />
         <main>{children}</main>
+        <SiteFooter />
       </body>
     </html>
   )

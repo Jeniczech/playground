@@ -87,9 +87,15 @@ export interface Config {
   fallbackLocale: null;
   globals: {
     hero: Hero;
+    'how-it-works': HowItWork;
+    'prague-experience': PragueExperience;
+    'next-adventure': NextAdventure;
   };
   globalsSelect: {
     hero: HeroSelect<false> | HeroSelect<true>;
+    'how-it-works': HowItWorksSelect<false> | HowItWorksSelect<true>;
+    'prague-experience': PragueExperienceSelect<false> | PragueExperienceSelect<true>;
+    'next-adventure': NextAdventureSelect<false> | NextAdventureSelect<true>;
   };
   locale: null;
   widgets: {
@@ -303,6 +309,78 @@ export interface Hero {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "how-it-works".
+ */
+export interface HowItWork {
+  id: number;
+  title: string;
+  /**
+   * Small uppercase line on the right of the title.
+   */
+  label: string;
+  /**
+   * Steps are numbered automatically in this order.
+   */
+  steps: {
+    icon: 'flag' | 'map' | 'question';
+    title: string;
+    description: string;
+    id?: string | null;
+  }[];
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "prague-experience".
+ */
+export interface PragueExperience {
+  id: number;
+  title: string;
+  features: {
+    icon: 'eye' | 'flag' | 'key' | 'diamond';
+    title: string;
+    description: string;
+    id?: string | null;
+  }[];
+  /**
+   * Small uppercase line above the gallery heading.
+   */
+  galleryLabel: string;
+  galleryHeading: string;
+  /**
+   * Captions under the phone previews, in order.
+   */
+  screenshots: {
+    title: string;
+    description: string;
+    id?: string | null;
+  }[];
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * Download call to action and contact. The store links come from the Hero global.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "next-adventure".
+ */
+export interface NextAdventure {
+  id: number;
+  /**
+   * Shown next to the Golem.
+   */
+  guideHeading: string;
+  guideDescription: string;
+  heading: string;
+  description: string;
+  contactHeading: string;
+  contactEmail: string;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "hero_select".
  */
 export interface HeroSelect<T extends boolean = true> {
@@ -313,6 +391,67 @@ export interface HeroSelect<T extends boolean = true> {
   googlePlayUrl?: T;
   note?: T;
   tag?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "how-it-works_select".
+ */
+export interface HowItWorksSelect<T extends boolean = true> {
+  title?: T;
+  label?: T;
+  steps?:
+    | T
+    | {
+        icon?: T;
+        title?: T;
+        description?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "prague-experience_select".
+ */
+export interface PragueExperienceSelect<T extends boolean = true> {
+  title?: T;
+  features?:
+    | T
+    | {
+        icon?: T;
+        title?: T;
+        description?: T;
+        id?: T;
+      };
+  galleryLabel?: T;
+  galleryHeading?: T;
+  screenshots?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "next-adventure_select".
+ */
+export interface NextAdventureSelect<T extends boolean = true> {
+  guideHeading?: T;
+  guideDescription?: T;
+  heading?: T;
+  description?: T;
+  contactHeading?: T;
+  contactEmail?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

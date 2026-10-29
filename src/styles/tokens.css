@@ -12,6 +12,8 @@
   --color-ink: #101c30;
   --color-sun-yellow: #ffc33a;
   --color-mist-blue: #e5edff;
+  --color-cloud-blue: #f5f8ff;
+  --color-haze-blue: #c4d2ea;
 
   --color-text: var(--color-night-blue);
   --color-background: var(--color-morning-blue);
@@ -41,6 +43,30 @@
   --text-display-xl-line-height: 0.97;
   --text-display-xl-letter-spacing: -0.02em;
 
+  --text-display-l-size: 48px;
+  --text-display-l-line-height: 1.08;
+
+  --text-display-m-size: 46px;
+  --text-display-m-line-height: normal;
+
+  --text-display-s-size: 44px;
+  --text-display-s-line-height: 1.08;
+
+  --text-display-cta-size: 56px;
+  --text-display-cta-line-height: 1.03;
+
+  --text-heading-l-size: 32px;
+  --text-heading-l-line-height: 1.05;
+
+  --text-heading-m-size: 28px;
+  --text-heading-m-line-height: 1.15;
+
+  --text-heading-s-size: 26px;
+  --text-heading-s-line-height: 1.15;
+
+  --text-body-m-size: 16px;
+  --text-body-m-line-height: 1.25;
+
   --text-body-l-size: 17px;
   --text-body-l-line-height: 1.65;
 
@@ -60,12 +86,18 @@
   --space-4: 16px;
   --space-5: 20px;
   --space-6: 24px;
+  --space-7: 28px;
   --space-8: 32px;
+  --space-10: 40px;
   --space-12: 48px;
+  --space-14: 56px;
   --space-16: 64px;
+  --space-18: 72px;
 
   /* Radius */
   --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
   --radius-pill: 999px;
 
   /* Shadow */
@@ -86,5 +118,10 @@
     --page-gutter: 24px;
     /* No mobile hero design yet; 52px keeps "Discover Prague" on one line at 375px. */
     --text-display-xl-size: 52px;
+    --text-display-l-size: 40px;
+    --text-display-m-size: 38px;
+    --text-display-s-size: 38px;
+    --text-display-cta-size: 44px;
+    --text-heading-l-size: 26px;
   }
 }
