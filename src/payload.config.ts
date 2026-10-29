@@ -26,6 +26,9 @@ export default buildConfig({
     outputFile: path.resolve(dirname, 'payload-types.ts'),
   },
   db: postgresAdapter({
+    // Dev databases are built by migrations too, so they get the seeded content and never
+    // lose rows to a schema push.
+    push: false,
     pool: {
       connectionString: process.env.DATABASE_URL || '',
     },

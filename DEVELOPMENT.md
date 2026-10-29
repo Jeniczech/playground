@@ -158,6 +158,8 @@ Do not manually recreate the production schema.
 
 The migration files are the source of truth for schema evolution.
 
+Schema push is disabled (`push: false` in `src/payload.config.ts`), so `pnpm dev` never changes the database schema. Run `pnpm payload migrate` after every pull that adds a migration; migrations also seed the content of new sections.
+
 ---
 
 # 7. Start the application
@@ -242,7 +244,7 @@ When changing collections or fields:
 2.  generate/update Payload types as needed
 3.  create a database migration
 4.  inspect the generated migration
-5.  test it locally
+5.  apply it locally with `pnpm payload migrate` (the dev server does not push schema changes)
 6.  commit the migration together with the code change
 
 Do not make production database schema changes manually.
