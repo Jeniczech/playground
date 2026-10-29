@@ -1,0 +1,31 @@
+/* Side by side from 375px up, shrinking equally when the row is narrower than two 180px badges. */
+.storeBadges {
+  display: flex;
+  gap: var(--space-2);
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  & > li {
+    flex: 0 1 180px;
+    min-width: 0;
+  }
+
+  @media (max-width: 768px) {
+    &[data-stretch] > li {
+      flex: 1 1 0;
+    }
+  }
+
+  /* Below 375px two badges no longer fit their labels, so they stack at full width. */
+  @media (max-width: 374px) {
+    flex-direction: column;
+
+    & > li,
+    &[data-stretch] > li {
+      flex: none;
+      width: 100%;
+    }
+  }
+}

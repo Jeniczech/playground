@@ -1,0 +1,88 @@
+.howItWorks {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-7);
+  padding: var(--space-14) var(--page-padding-inline) var(--space-16);
+  background: var(--color-mist-blue);
+
+  @media (max-width: 768px) {
+    padding-block: var(--space-12);
+  }
+}
+
+.heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-6);
+}
+
+/* The mobile design drops the section label. */
+.label {
+  @media (max-width: 768px) {
+    display: none;
+  }
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-regular);
+  font-size: var(--text-display-m-size);
+  line-height: var(--text-display-m-line-height);
+}
+
+.steps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-5);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  @media (max-width: 768px) {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-3);
+  }
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-4);
+  padding: var(--space-7);
+  border-radius: var(--radius-xl);
+  background: var(--color-white);
+
+  @media (max-width: 768px) {
+    padding: var(--space-6);
+  }
+}
+
+.motif {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-lg);
+  background: var(--color-mist-blue);
+}
+
+.stepTitle {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-regular);
+  font-size: var(--text-heading-m-size);
+  line-height: var(--text-heading-m-line-height);
+}
+
+/* Figma: Body M Regular */
+.stepDescription {
+  margin: 0;
+  font-size: var(--text-body-m-size);
+  line-height: var(--text-body-m-line-height);
+  color: var(--color-text-muted);
+}

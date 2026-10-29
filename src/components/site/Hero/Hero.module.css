@@ -24,15 +24,6 @@
   gap: var(--space-6);
 }
 
-.eyebrow {
-  margin: 0;
-  font-weight: var(--font-weight-bold);
-  font-size: var(--text-eyebrow-size);
-  line-height: var(--text-eyebrow-line-height);
-  letter-spacing: var(--text-eyebrow-letter-spacing);
-  text-transform: uppercase;
-}
-
 .heading {
   margin: 0;
   font-family: var(--font-display);
@@ -47,15 +38,6 @@
   font-size: var(--text-body-l-size);
   line-height: var(--text-body-l-line-height);
   color: var(--color-text-muted);
-}
-
-.storeBadges {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-  margin: 0;
-  padding: 0;
-  list-style: none;
 }
 
 /* Figma: Body S Regular */

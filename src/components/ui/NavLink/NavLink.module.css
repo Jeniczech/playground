@@ -1,4 +1,4 @@
-/* Figma text style: Body S Semibold */
+/* Figma text style: Body S Semibold (Body S Regular with weight="regular") */
 .navLink {
   display: block;
   font-family: var(--font-body);
@@ -8,6 +8,10 @@
   color: var(--color-text);
   text-decoration: none;
   white-space: nowrap;
+
+  &[data-weight='regular'] {
+    font-weight: var(--font-weight-regular);
+  }
 
   &:hover {
     text-decoration: underline;

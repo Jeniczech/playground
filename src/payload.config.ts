@@ -7,6 +7,9 @@ import sharp from 'sharp'
 
 import { Users } from './collections/Users'
 import { Hero } from './globals/Hero'
+import { HowItWorks } from './globals/HowItWorks'
+import { NextAdventure } from './globals/NextAdventure'
+import { PragueExperience } from './globals/PragueExperience'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -19,7 +22,7 @@ export default buildConfig({
     },
   },
   collections: [Users],
-  globals: [Hero],
+  globals: [Hero, HowItWorks, PragueExperience, NextAdventure],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
