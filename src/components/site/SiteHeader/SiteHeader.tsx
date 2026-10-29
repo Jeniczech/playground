@@ -6,7 +6,6 @@ import styles from './SiteHeader.module.css'
 const navItems = [
   { label: 'How it works', href: '#how-it-works' },
   { label: 'Contact', href: '#contact' },
-  { label: 'Privacy', href: '/privacy' },
 ]
 
 export function SiteHeader() {
