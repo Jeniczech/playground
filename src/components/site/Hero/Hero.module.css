@@ -1,9 +1,10 @@
 .hero {
   display: grid;
   grid-template-columns: minmax(0, 550px) minmax(0, 600px);
+  justify-content: space-between;
   align-items: center;
   column-gap: var(--space-16);
-  padding: var(--space-12) var(--page-gutter);
+  padding: var(--space-12) var(--page-padding-inline);
 
   /* No tablet/mobile design: stack the illustration under the text. */
   @media (max-width: 1024px) {
