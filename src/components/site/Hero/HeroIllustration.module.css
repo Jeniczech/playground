@@ -62,6 +62,11 @@
   rotate: -4deg;
 }
 
+/* The screenshots are slightly taller than the phones; crop evenly top and bottom. */
+.screen {
+  object-fit: cover;
+}
+
 .golem {
   left: calc(207 * var(--u));
   top: calc(410 * var(--u));

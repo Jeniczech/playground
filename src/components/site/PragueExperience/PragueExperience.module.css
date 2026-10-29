@@ -152,6 +152,11 @@
   }
 }
 
+/* The screenshots are slightly taller than the phones; crop evenly top and bottom. */
+.screen {
+  object-fit: cover;
+}
+
 .caption {
   display: flex;
   flex-direction: column;

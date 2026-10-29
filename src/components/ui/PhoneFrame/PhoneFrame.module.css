@@ -18,7 +18,7 @@
 
 .screen {
   position: absolute;
-  inset: var(--phone-border);
+  inset: 0;
   border-radius: calc(var(--phone-radius) - var(--phone-border));
   background: var(--color-morning-blue);
   overflow: hidden;
