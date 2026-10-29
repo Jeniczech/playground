@@ -5,7 +5,6 @@ import styles from './SiteFooter.module.css'
 
 const footerLinks = [
   { label: 'Contact', href: '#contact' },
-  { label: 'Privacy Policy', href: '/privacy' },
 ]
 
 export function SiteFooter() {
