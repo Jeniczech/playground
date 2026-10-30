@@ -99,6 +99,14 @@ DATABASE_URL=postgres://playground:playground@127.0.0.1:5432/playground
 PAYLOAD_SECRET=<your-local-secret>
 ```
 
+To send email locally, also set:
+
+```env
+SMTP_USER=<smtp-user>
+SMTP_PASSWORD=<smtp-password>
+SERVER_URL=http://localhost:3000
+```
+
 Generate your own Payload secret.
 
 Do not copy production secrets into the local environment.

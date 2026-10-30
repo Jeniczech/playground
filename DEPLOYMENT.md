@@ -190,6 +190,9 @@ It contains values such as:
 ```text
 DATABASE_URL
 PAYLOAD_SECRET
+SMTP_USER
+SMTP_PASSWORD
+SERVER_URL
 ```
 
 Its permissions are restricted. GitHub Actions additionally stores SSH-related secrets.
@@ -227,7 +230,12 @@ There is currently no error tracking for the application.
 
 ## Email
 
-Payload has no production email adapter configured. This will matter for password reset, transactional email and notifications.
+Payload sends email through the Nodemailer adapter (`src/payload.config.ts`) via Forpsi SMTP (`smtp.forpsi.com:465`, TLS), from `Prague Scavenger Hunt <info@praguescavengerhunt.cz>`.
+
+- `SMTP_USER` and `SMTP_PASSWORD` in `/opt/apps/playground/.env` hold the mailbox credentials.
+- `SERVER_URL` is Payload's `serverURL`, so it sets the links in emails such as password reset, and the allowed CORS and CSRF origin. In production it must be `https://praguescavengerhunt.cz`.
+- `deploy/compose.yml` requires all three, so a deploy fails at the Compose validation step if one is missing.
+- The SMTP connection is only verified at startup in production. A failed check is logged as `Error verifying Nodemailer transport.` and does not stop the app.
 
 ## GitHub Actions on Node 20
 
