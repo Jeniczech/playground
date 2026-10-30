@@ -1,4 +1,5 @@
 import { postgresAdapter } from '@payloadcms/db-postgres'
+import { nodemailerAdapter } from '@payloadcms/email-nodemailer'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import path from 'path'
 import { buildConfig } from 'payload'
@@ -13,6 +14,7 @@ import { PragueExperience } from './globals/PragueExperience'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
+const serverURL = process.env.SERVER_URL || 'http://localhost:3000'
 
 export default buildConfig({
   admin: {
@@ -65,4 +67,21 @@ export default buildConfig({
       },
     },
   ],
+  email: nodemailerAdapter({
+    defaultFromAddress: 'info@praguescavengerhunt.cz',
+    defaultFromName: 'Prague Scavenger Hunt',
+    skipVerify: process.env.NODE_ENV !== 'production',
+    transportOptions: {
+      host: 'smtp.forpsi.com',
+      port: 465,
+      secure: true,
+      auth: {
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASSWORD,
+      },
+    },
+  }),
+  serverURL,
+  cors: [serverURL],
+  csrf: [serverURL],
 })
