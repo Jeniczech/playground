@@ -268,6 +268,7 @@ Working:
 ✅ rollback refused after applied DB migration
 ✅ tested healthy, rollback, and migration-guard paths
 ✅ serialized production deployments
+✅ production email
 ```
 
 Still to do:
@@ -276,6 +277,5 @@ Still to do:
 ⬜ further migration strategy hardening
 ⬜ E2E tests in CI
 ⬜ application error tracking
-⬜ production email
 ⬜ GitHub Actions upgrade off Node 20
 ```
